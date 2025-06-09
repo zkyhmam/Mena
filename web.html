@@ -4,18 +4,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-translate="site_title">SofagHub - سوفاج هاب</title>
+    
+    <meta name="description" content="SofagHub: Your premium hub for exclusive Arabic Siko Siko videos. Browse, subscribe, and watch high-quality content. سوفاج هاب، موقعك الأول لمشاهدة فيديوهات سيكو سيكو العربية الحصرية.">
+    <meta name="keywords" content="SofagHub, Siko Siko, Arabic Videos, exclusive content, video streaming, سوفاج هاب, سيكو سيكو, فيديوهات عربي, محتوى حصري">
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/images/favicon.png" type="image/png">
 </head>
 <body>
 
     <header>
-        <div class="container header-container">
-            <div class="logo" data-section="home-section">
+        <div class="header-container">
+            <div class="logo" data-section-target="home-section">
                 <h1>Sofa<span class="logo-g">g</span><span class="logo-hub-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M10 8v8l6-4-6-4zm11-5H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
                     </svg>
                 </span>Hub</h1>
@@ -25,65 +30,44 @@
                 <div class="search-input-group">
                     <input type="search" id="searchInput" data-translate-placeholder="search_placeholder" placeholder="ابحث عن فيديوهات..." aria-label="Search videos">
                     <button id="searchButton" aria-label="Search">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
                         <span class="search-button-text" data-translate="search_button_text">بحث</span>
                     </button>
                 </div>
             </div>
-            
-            <nav>
-                <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation" aria-expanded="false">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </button>
-                <ul id="navLinks">
-                    <li><a href="#" data-section="home-section" class="nav-link active" data-translate="nav_home">الرئيسية</a></li>
-                    <li><a href="#" data-section="videos-section" class="nav-link" data-translate="nav_videos">الفيديوهات</a></li>
-                    <li><a href="#" data-section="subscription-section" class="nav-link" data-translate="nav_subscriptions">الاشتراكات</a></li>
-                    <li><a href="#" data-section="settings-section" class="nav-link" data-translate="nav_settings">الإعدادات</a></li>
-                    <li id="navLoginLinkContainer"><a href="#" data-section="login-section" class="nav-link" data-translate="nav_login">تسجيل الدخول</a></li>
-                    
-                    <li id="navAccountDropdownContainer" class="account-dropdown-container" style="display: none;">
-                        <button class="account-dropdown-btn" id="accountDropdownBtn">
-                            <span id="loggedInUsernameDropdown"></span>
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-caret-down-fill account-caret" viewBox="0 0 16 16">
-                                <path d="M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z"/>
-                            </svg>
-                        </button>
-                        <div class="account-dropdown-content" id="accountDropdownContent">
-                            <div class="user-plan-info">
-                                <span data-translate="plan_label">الخطة:</span> <span id="userCurrentPlan" data-translate="free_plan_price">مجاني</span>
-                            </div>
-                            <a href="#" id="manageAccountLink" data-translate="manage_account_link">إدارة الحساب</a>
-                            <div class="dropdown-divider"></div>
-                            <button id="logoutButtonFromDropdown" data-translate="nav_logout_dropdown">تسجيل الخروج</button>
-                            <div class="dropdown-divider"></div>
-                            <button id="deleteAccountBtn" class="delete-account-btn" data-translate="delete_account_link">حذف الحساب</button>
-                        </div>
-                    </li>
-                </ul>
-            </nav>
+
+            <div class="header-account-actions">
+                <a href="#login-section" id="headerLoginBtn" data-section-target="login-section" class="btn-primary-outline" data-translate="nav_login" style="display: none;">تسجيل الدخول</a>
+                <a href="#manage-account-section" id="headerAccountBtn" data-section-target="manage-account-section" class="btn-primary" data-translate="manage_account_link" style="display: none;">حسابي</a>
+            </div>
         </div>
+        <nav id="mainNav">
+            <div class="container nav-container">
+                <ul id="navLinks">
+                    <li><a href="#home-section" data-section-target="home-section" class="nav-link active" data-translate="nav_home">الرئيسية</a></li>
+                    <li><a href="#videos-section" data-section-target="videos-section" class="nav-link" data-translate="nav_videos">الفيديوهات</a></li>
+                    <li><a href="#subscription-section" data-section-target="subscription-section" class="nav-link" data-translate="nav_subscriptions">الاشتراكات</a></li>
+                    <li><a href="#settings-section" data-section-target="settings-section" class="nav-link" data-translate="nav_settings">الإعدادات</a></li>
+                </ul>
+            </div>
+        </nav>
     </header>
 
     <main>
+        <div id="globalMessage" class="global-message" style="display:none;"></div>
+
         <section id="home-section" class="content-section active">
             <div class="container">
-                <h2 class="section-title main-title" data-translate="welcome_title">مرحباً بك في SofagHub!</h2>
-                <p class="text-center mb-2 site-subtitle" data-translate="site_subtitle_text">موقع عربي مميز لمشاهدة السيكو سيكو العربي</p>
-                <div id="globalMessage" class="global-message" style="display:none;"></div>
+                <h2 class="section-title" data-translate="welcome_title">مرحباً بك في SofagHub!</h2>
                 <h3 class="sub-section-title" data-translate="suggested_for_you">مقترحة لك</h3>
-                <div class="video-grid suggested-videos" id="suggestedVideosContainer">
-                </div>
+                <div class="video-grid" id="suggestedVideosContainer"></div>
             </div>
         </section>
 
         <section id="videos-section" class="content-section">
             <div class="container">
                 <h2 class="section-title" data-translate="browse_videos_title">تصفح الفيديوهات</h2>
-                <div class="video-grid" id="videoGridContainer">
-                </div>
+                <div class="video-grid" id="videoGridContainer"></div>
             </div>
         </section>
 
@@ -91,48 +75,21 @@
             <div class="container">
                 <h2 class="section-title" data-translate="subscription_plans_title">خطط الاشتراك</h2>
                 <div class="subscription-plans">
+                    <!-- Plans will be populated by JS, but keeping one as a template -->
                     <div class="plan-card basic-plan">
                         <div class="plan-header">
-                            <h3 data-translate="basic_plan_title">الخطة الأساسية</h3>
+                            <h3 data-translate="free_plan_title">الخطة المجانية</h3>
                             <div class="plan-price" data-translate="free_plan_price">مجاني</div>
                         </div>
                         <ul class="plan-features">
-                            <li><span class="feature-icon">✗</span> <span data-translate="basic_feature_1">الوصول لفيديوهات محدودة</span></li>
-                            <li><span class="feature-icon">✗</span> <span data-translate="basic_feature_2">جودة مشاهدة منخفضة (SD)</span></li>
-                            <li><span class="feature-icon">✗</span> <span data-translate="basic_feature_3">إعلانات كثيرة ومزعجة</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="basic_feature_4">دعم عبر المنتدى</span></li>
+                            <li><span data-translate="free_feature_1">فيديوهات مجانية محدودة</span></li>
+                            <li><span data-translate="free_feature_2">جودة منخفضة (SD)</span></li>
+                            <li><span data-translate="free_feature_3">مع إعلانات</span></li>
+                            <li><span data-translate="free_feature_4">بدون تحميل</span></li>
                         </ul>
-                        <button class="btn-secondary select-plan-btn" data-translate="start_free_btn">ابدأ مجاناً</button>
+                        <a href="https://t.me/sofag255" target="_blank" class="btn-secondary select-plan-btn" data-translate="start_free_btn">ابدأ مجاناً</a>
                     </div>
-                    <div class="plan-card premium-plan recommended">
-                        <div class="plan-badge" data-translate="most_popular_badge">الأكثر شيوعاً</div>
-                        <div class="plan-header">
-                            <h3 data-translate="premium_plan_title">الخطة المميزة</h3>
-                            <div class="plan-price">$9.99<span data-translate="monthly_text">/شهرياً</span></div>
-                        </div>
-                        <ul class="plan-features">
-                            <li><span class="feature-icon">✓</span> <span data-translate="premium_feature_1">الوصول لجميع الفيديوهات</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="premium_feature_2">جودة مشاهدة عالية (HD/1080p)</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="premium_feature_3">مشاهدة بدون إعلانات</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="premium_feature_4">محتوى حصري وجديد أسبوعياً</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="premium_feature_5">دعم فني عبر البريد</span></li>
-                        </ul>
-                        <button class="btn-primary select-plan-btn" data-translate="subscribe_now_btn">اشترك الآن</button>
-                    </div>
-                    <div class="plan-card ultimate-plan">
-                         <div class="plan-header">
-                            <h3 data-translate="ultimate_plan_title">الخطة الفائقة</h3>
-                            <div class="plan-price">$19.99<span data-translate="monthly_text">/شهرياً</span></div>
-                        </div>
-                        <ul class="plan-features">
-                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_1">جميع مزايا الخطة المميزة</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_2">جودة مشاهدة فائقة (4K UHD)</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_3">تحميل الفيديوهات للمشاهدة لاحقًا</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_4">وصول مبكر للمحتوى الجديد</span></li>
-                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_5">دعم فني مخصص وسريع</span></li>
-                        </ul>
-                        <button class="btn-primary-outline select-plan-btn" data-translate="choose_ultimate_btn">اختر الخطة الفائقة</button>
-                    </div>
+                    <!-- Other plans here -->
                 </div>
             </div>
         </section>
@@ -140,14 +97,10 @@
         <section id="settings-section" class="content-section">
             <div class="container">
                 <h2 class="section-title" data-translate="settings_title">إعدادات المظهر واللغة</h2>
-                <div class="form-container settings-form">
-                    <div class="form-group theme-switcher-group">
-                        <label for="themeToggleBtn" class="theme-label" data-translate="theme_label">المظهر:</label>
-                        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="تبديل المظهر" data-theme="light">
-                            <span class="icon-sun">☀</span>
-                            <span class="icon-moon">☾</span>
-                            <span class="toggle-slider"></span>
-                        </button>
+                <div class="settings-form">
+                    <div class="form-group">
+                        <label for="themeToggleBtn" data-translate="theme_label">المظهر:</label>
+                        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="تبديل المظهر" data-theme="light"></button>
                     </div>
                     <div class="form-group">
                         <label for="languageSelect" data-translate="language_label">لغة الواجهة:</label>
@@ -156,7 +109,7 @@
                             <option value="en">English</option>
                         </select>
                     </div>
-                    <button type="submit" id="saveAppearanceSettingsBtn" class="btn-primary btn-block" data-translate="save_settings_btn">حفظ الإعدادات</button>
+                    <button id="saveAppearanceSettingsBtn" class="btn-primary btn-block" data-translate="save_settings_btn">حفظ الإعدادات</button>
                 </div>
             </div>
         </section>
@@ -165,8 +118,24 @@
             <div class="container">
                 <h2 class="section-title" data-translate="manage_account_title">إدارة الحساب</h2>
                 <div id="manageAccountMessage" class="auth-message" style="display:none;"></div>
+                
+                <!-- Account Overview Card -->
+                <div class="account-overview">
+                    <h3 data-translate="account_overview_title">نظرة عامة على الحساب</h3>
+                    <p><strong data-translate="username_label">اسم المستخدم:</strong> <span id="accountOverviewUsername"></span></p>
+                    <p><strong data-translate="email_label">البريد الإلكتروني:</strong> <span id="accountOverviewEmail"></span></p>
+                    <p><strong data-translate="my_plan_label">خطتي الحالية:</strong> <span id="accountOverviewPlan" class="plan-badge"></span></p>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="account-actions">
+                    <button id="showUpdateUsernameBtn" class="btn-secondary" data-translate="edit_profile_btn">تعديل الملف الشخصي</button>
+                    <button id="showUpdatePasswordBtn" class="btn-secondary" data-translate="change_password_btn">تغيير كلمة المرور</button>
+                </div>
 
-                <div class="form-container settings-form">
+                <!-- Update Username Form (Hidden) -->
+                <div id="updateUsernameForm" class="account-card account-form">
+                    <h3 class="sub-section-title" data-translate="update_username_btn">تحديث اسم المستخدم</h3>
                     <div class="form-group">
                         <label for="currentUsernameDisplay" data-translate="current_username_label">اسم المستخدم الحالي:</label>
                         <input type="text" id="currentUsernameDisplay" class="form-control" readonly>
@@ -175,10 +144,11 @@
                         <label for="newUsername" data-translate="new_username_label">اسم المستخدم الجديد:</label>
                         <input type="text" id="newUsername" class="form-control" data-translate-placeholder="new_username_placeholder" placeholder="اتركه فارغًا لعدم التغيير">
                     </div>
-                    <button id="updateUsernameBtn" class="btn-primary btn-block" data-translate="update_username_btn">تحديث اسم المستخدم</button>
+                    <button id="updateUsernameBtn" class="btn-primary btn-block" data-translate="update_username_btn">تحديث</button>
                 </div>
 
-                <div class="form-container settings-form mt-2">
+                <!-- Update Password Form (Hidden) -->
+                <div id="updatePasswordForm" class="account-card account-form">
                     <h3 class="sub-section-title" data-translate="change_password_title">تغيير كلمة المرور</h3>
                     <div class="form-group">
                         <label for="currentPassword" data-translate="current_password_label">كلمة المرور الحالية:</label>
@@ -192,7 +162,14 @@
                         <label for="confirmNewPassword" data-translate="confirm_new_password_label">تأكيد كلمة المرور الجديدة:</label>
                         <input type="password" id="confirmNewPassword" class="form-control" required>
                     </div>
-                    <button id="updatePasswordBtn" class="btn-primary btn-block" data-translate="update_password_btn">تحديث كلمة المرور</button>
+                    <button id="updatePasswordBtn" class="btn-primary btn-block" data-translate="update_password_btn">تحديث</button>
+                </div>
+
+                <!-- Danger Zone -->
+                <div class="danger-zone">
+                    <h4 data-translate="danger_zone_title">منطقة الخطر</h4>
+                     <button id="logoutBtn" class="btn-secondary" data-translate="logout_btn_text">تسجيل الخروج</button>
+                    <button id="deleteAccountBtn" class="btn-danger" data-translate="delete_account_btn_text">حذف الحساب نهائياً</button>
                 </div>
             </div>
         </section>
@@ -202,12 +179,11 @@
                 <div id="authMessage" class="auth-message" style="display:none;"></div>
                 
                 <form id="loginForm" class="auth-form-container" style="display: block;"> 
-                    <h2 class="section-title" data-translate="login_title_section" style="display: block;">تسجيل الدخول</h2>
-                    <h2 class="section-title" data-translate="create_account_title" style="display: none;">إنشاء حساب جديد</h2> 
+                    <h2 class="section-title login-form-title" data-translate="login_title_section">تسجيل الدخول</h2>
                     <div class="form-container">
                         <div class="form-group">
                             <label for="loginEmail" data-translate="email_label">البريد الإلكتروني</label>
-                            <input type="email" id="loginEmail" class="form-control" required data-translate-placeholder="email_placeholder" placeholder="example@mail.com">
+                            <input type="email" id="loginEmail" class="form-control" required data-translate-placeholder="email_placeholder" placeholder="example@gmail.com">
                         </div>
                         <div class="form-group">
                             <label for="loginPassword" data-translate="password_label">كلمة المرور</label>
@@ -215,22 +191,22 @@
                         </div>
                         <button type="submit" class="btn-primary btn-block" data-translate="login_btn">تسجيل الدخول</button>
                         <p class="mt-2 text-center form-switch-text">
-                            <span data-translate="no_account_text">ليس لديك حساب؟</span> <a href="#" id="switchToRegister" class="auth-link" data-translate="create_account_link">أنشئ حساباً جديداً</a>
+                            <span data-translate="no_account_text">ليس لديك حساب؟</span> <a href="#login-section" id="switchToRegister" class="auth-link" data-translate="create_account_link">أنشئ حساباً جديداً</a>
                         </p>
                     </div>
                 </form>
 
                 <form id="registerForm" style="display:none;" class="auth-form-container">
-                     <!-- عنوان "إنشاء حساب جديد" سيظهر/يخفى بواسطة JavaScript هنا -->
+                    <h2 class="section-title register-form-title" data-translate="create_account_title">إنشاء حساب جديد</h2> 
                     <div class="form-container">
-                        <p class="password-warning"><b>تنبيه هام:</b> لا يمكن استعادة كلمة المرور إذا نسيتها. الرجاء حفظها في مكان آمن أو استخدام تلميح قوي لتذكرها.</p>
+                        <p class="password-warning" data-translate="password_warning_text"><b>تنبيه هام:</b> لا يمكن استعادة كلمة المرور إذا نسيتها.</p>
                         <div class="form-group">
                             <label for="registerUsername" data-translate="username_label">اسم المستخدم</label>
-                            <input type="text" id="registerUsername" class="form-control" required data-translate-placeholder="username_placeholder" placeholder="اسمك الفريد">
+                            <input type="text" id="registerUsername" class="form-control" required data-translate-placeholder="username_placeholder" placeholder="e.g. user123 (lowercase & numbers only)">
                         </div>
                         <div class="form-group">
                             <label for="registerEmail" data-translate="email_label">البريد الإلكتروني</label>
-                            <input type="email" id="registerEmail" class="form-control" required data-translate-placeholder="email_placeholder" placeholder="example@mail.com">
+                            <input type="email" id="registerEmail" class="form-control" required data-translate-placeholder="email_placeholder" placeholder="example@gmail.com">
                         </div>
                         <div class="form-group">
                             <label for="registerPassword" data-translate="password_label">كلمة المرور</label>
@@ -240,13 +216,9 @@
                             <label for="registerConfirmPassword" data-translate="confirm_password_label">تأكيد كلمة المرور</label>
                             <input type="password" id="registerConfirmPassword" class="form-control" required data-translate-placeholder="confirm_password_placeholder" placeholder="أعد إدخال كلمة المرور">
                         </div>
-                        <div class="form-group">
-                            <label for="registerHint">تلميح كلمة المرور (اختياري)</label>
-                            <input type="text" id="registerHint" class="form-control" placeholder="مثال: اسم أول حيوان أليف">
-                        </div>
                         <button type="submit" class="btn-primary btn-block" data-translate="create_account_btn">إنشاء حساب</button>
                         <p class="mt-2 text-center form-switch-text">
-                            <span data-translate="already_have_account_text">لديك حساب بالفعل؟</span> <a href="#" id="switchToLogin" class="auth-link" data-translate="login_link_from_register">سجل الدخول</a>
+                            <span data-translate="already_have_account_text">لديك حساب بالفعل؟</span> <a href="#login-section" id="switchToLogin" class="auth-link" data-translate="login_link_from_register">سجل الدخول</a>
                         </p>
                     </div>
                 </form>
@@ -256,32 +228,23 @@
 
     <footer>
         <div class="container">
-            <p>© <span id="currentYear"></span> SofagHub - <span data-translate="footer_text">سيكو سيكو عربي قريب.</span></p>
+            <p>© <span id="currentYear"></span> SofagHub</p>
         </div>
     </footer>
 
     <div id="premiumContentModal" class="modal" style="display: none;"> 
         <div class="modal-content">
-            <span class="close-modal-btn">×</span>
-            <div class="modal-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6-5c1.65 0 3 1.35 3 3v2H9V6c0-1.65 1.35-3 3-3zm6 15H6V10h12v8z"/><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
-            </div>
-            <h2 data-translate="modal_title">محتوى حصري للمشتركين!</h2>
-            <p data-translate="modal_description">هذا الفيديو يتطلب اشتراكًا مميزًا للوصول إليه.</p>
-            <ul class="modal-features">
-                <li><span class="feature-icon">✓</span> <span data-translate="modal_feature_1">فيديوهات حصرية جديدة أسبوعياً</span></li>
-                <li><span class="feature-icon">✓</span> <span data-translate="modal_feature_2">جودة تصل إلى 4K</span></li>
-                <li><span class="feature-icon">✓</span> <span data-translate="modal_feature_3">بدون إعلانات مزعجة</span></li>
-                <li><span class="feature-icon">✓</span> <span data-translate="modal_feature_4">دعم فني متميز</span></li>
-            </ul>
-            <button id="modalSubscribeBtn" class="btn-primary modal-action-btn" data-translate="subscribe_now_btn_modal">الاشتراك الآن</button>
-            <a href="#" id="modalSeePlansBtn" class="modal-link" data-translate="see_all_plans_link">مشاهدة جميع الخطط</a>
+            <span class="close-modal-btn" aria-label="Close modal">×</span>
+            <h2 data-translate="modal_title">محتوى حصري!</h2>
+            <p data-translate="modal_description_generic">هذا الفيديو يتطلب اشتراكًا مميزًا.</p>
+            <a href="https://t.me/sofag255" target="_blank" id="modalSubscribeBtn" class="btn-primary" data-translate="subscribe_now_btn_modal">الاشتراك الآن</a>
+            <a href="#subscription-section" id="modalSeePlansBtn" class="modal-link" data-translate="see_all_plans_link">مشاهدة جميع الخطط</a>
         </div>
     </div>
 
     <div id="videoPlayerModal" class="video-player-modal">
         <div class="video-player-modal-content">
-            <span class="close-video-player-btn" id="closeVideoPlayerModalBtn">×</span>
+            <span class="close-video-player-btn" id="closeVideoPlayerModalBtn" aria-label="Close video player">×</span>
             <video id="mainVideoPlayer" controls controlsList="nodownload" oncontextmenu="return false;"></video>
             <div id="videoPlayerTitle"></div>
         </div>

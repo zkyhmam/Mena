@@ -1,0 +1,2093 @@
+===== script.js =====
+document.addEventListener('DOMContentLoaded', () => {
+    // Updated selectors for navigation links to include the new account button
+    const navLinks = document.querySelectorAll('#navLinks li a.nav-link[data-section-target], .logo[data-section-target], #headerAccountBtn[data-section-target]');
+    const contentSections = document.querySelectorAll('.content-section');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const body = document.body;
+    const currentYearSpan = document.getElementById('currentYear');
+    const languageSelect = document.getElementById('languageSelect');
+    const saveAppearanceSettingsBtn = document.getElementById('saveAppearanceSettingsBtn');
+
+    // New selectors for the simplified account buttons in the header
+    const headerLoginBtn = document.getElementById('headerLoginBtn');
+    const headerAccountBtn = document.getElementById('headerAccountBtn');
+    
+    const globalMessageDiv = document.getElementById('globalMessage');
+    const authMessageDiv = document.getElementById('authMessage');
+    const manageAccountMessageDiv = document.getElementById('manageAccountMessage');
+
+    const currentUsernameDisplay = document.getElementById('currentUsernameDisplay');
+    const newUsernameInput = document.getElementById('newUsername');
+    const updateUsernameBtn = document.getElementById('updateUsernameBtn');
+    const currentPasswordInput = document.getElementById('currentPassword');
+    const newPasswordInput = document.getElementById('newPassword');
+    const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
+    const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+
+    const videoPlayerModal = document.getElementById('videoPlayerModal');
+    const mainVideoPlayer = document.getElementById('mainVideoPlayer');
+    const videoPlayerTitle = document.getElementById('videoPlayerTitle');
+    const closeVideoPlayerModalBtn = document.getElementById('closeVideoPlayerModalBtn');
+
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const switchToRegisterLink = document.getElementById('switchToRegister');
+    const switchToLoginLink = document.getElementById('switchToLogin');
+    
+    const loginFormTitleEl = loginForm?.querySelector('.login-form-title');
+    const registerFormTitleEl = registerForm?.querySelector('.register-form-title');
+    const premiumModal = document.getElementById('premiumContentModal');
+
+    let allVideosData = [];
+    let currentUserData = null; // Will store { username, plan }
+
+    const translations = {
+        en: {
+            site_title: "SofagHub - Your SikoSiko Hub", nav_home: "Home", nav_videos: "Videos", nav_subscriptions: "Subscriptions", nav_settings: "Settings", nav_login: "Login", search_placeholder: "Search videos...", search_button_text: "Search", welcome_title: "Welcome to SofagHub!", site_subtitle_text: "Your premium Arabic site for Siko Siko videos.", suggested_for_you: "Suggested for You", browse_videos_title: "Browse Videos", subscription_plans_title: "Subscription Plans", 
+            free_plan_title: "Free Plan", free_plan_price: "Free", free_feature_1: "Limited free videos", free_feature_2: "Low quality (SD)", free_feature_3: "With Ads", free_feature_4: "No downloads", start_free_btn: "Start Free", 
+            standard_plan_title: "Standard Plan", standard_duration_6months: "/6 months", standard_feature_1: "Access to free videos", standard_feature_2: "Ad-free watching", standard_feature_3: "Paid videos not included", standard_feature_4: "No downloads",
+            most_popular_badge: "Most Popular", pro_plan_title: "Pro Plan", monthly_text: "/month", pro_feature_1: "All videos (Free & Paid)", pro_feature_2: "High quality (HD/1080p)", pro_feature_3: "Ad-free watching", pro_feature_4: "Dedicated customer support", pro_feature_5: "No downloads", subscribe_now_btn: "Subscribe Now", 
+            ultimate_plan_title: "Ultimate Plan", ultimate_feature_1: "All Pro features", ultimate_feature_2: "Ultra high quality (4K UHD)", ultimate_feature_3: "Unlimited downloads", ultimate_feature_4: "24/7 priority support", ultimate_feature_5: "Early access to new content", choose_ultimate_btn: "Choose Ultimate Plan",
+            annual_plan_title: "Annual Plan", annually_text: "/year", annual_feature_1: "Everything! All Ultimate features", annual_feature_2: "Huge savings annually", annual_feature_3: "Top priority in everything", annual_feature_4: "Exclusive gifts & features", subscribe_annually_btn: "Subscribe Annually",
+            settings_title: "Appearance & Language Settings", theme_label: "Appearance:", language_label: "Interface Language:", save_settings_btn: "Save Settings", 
+            login_title_section: "Login", email_label: "Email", email_placeholder: "example@mail.com", password_label: "Password", password_placeholder: "********", login_btn: "Login", no_account_text: "Don't have an account?", create_account_link: "Create a new account", 
+            create_account_title: "Create New Account", username_label: "Username", username_placeholder: "Your unique name", password_placeholder_strong: "Strong password", confirm_password_label: "Confirm Password", confirm_password_placeholder: "Re-enter password", create_account_btn: "Create Account", already_have_account_text: "Already have an account?", login_link_from_register: "Login", 
+            password_warning_text: "Important: Password cannot be recovered if forgotten. Please save it securely or use a strong hint.", password_hint_label: "Password Hint (Optional)", password_hint_placeholder: "e.g., First pet's name",
+            footer_text: "Arabic Siko Siko, coming soon.", 
+            modal_title: "Exclusive Content!", modal_description_generic: "This video requires a premium subscription to access.", modal_feature_all_videos: "All videos (Free & Paid)", modal_feature_high_quality: "High quality up to 4K", modal_feature_no_ads: "No annoying ads", modal_feature_download: "Download content", subscribe_now_btn_modal: "Subscribe Now", see_all_plans_link: "See All Plans", 
+            tag_free: "Free", tag_paid: "Paid", views_text: "views", watch_now_btn_text: "Watch Now", premium_access_btn_text: "Exclusive Access", 
+            error_generic_ar: "An error occurred. Please try again.", error_generic_en: "An error occurred. Please try again.", error_loading_videos_ar: "Error loading videos. Please try again later.", error_loading_videos_en: "Error loading videos. Please try again later.", no_videos_ar: "No videos to display at the moment.", no_videos_en: "No videos to display at the moment.", password_mismatch_ar: "Passwords do not match.", password_mismatch_en: "Passwords do not match.", password_short_ar: "Password must be at least 6 characters long.", password_short_en: "Password must be at least 6 characters long.", error_logout_ar: "Error during logout.", error_logout_en: "Error during logout.", search_no_results_ar: "No search results found for '${query}'.", search_no_results_en: "No search results found for '${query}'.", settings_saved_ar: "Settings saved successfully!", settings_saved_en: "Settings saved successfully!", theme_toggle_light: "Switch to Light Theme", theme_toggle_dark: "Switch to Dark Theme", video_token_error_ar: "Error getting video viewing permission. Please try again.", video_token_error_en: "Error getting video viewing permission. Please try again.",
+            manage_account_link: "My Account", manage_account_title: "Manage Account", current_username_label: "Current Username:", new_username_label: "New Username:", new_username_placeholder: "Leave blank to keep current", update_username_btn: "Update Username", change_password_title: "Change Password", current_password_label: "Current Password:", new_password_label: "New Password:", confirm_new_password_label: "Confirm New Password:", update_password_btn: "Update Password", logout_confirm_title: "Confirm Logout", logout_confirm_message: "Are you sure you want to log out?", delete_account_confirm_title: "Confirm Account Deletion", delete_account_warning: "Warning! This action is irreversible. All your data and subscription (if any) will be permanently deleted. You will not be able to recover your account.", delete_account_prompt_password: "To confirm deletion, please enter your current password:", delete_account_success: "Your account has been successfully deleted.", delete_account_failed: "Failed to delete account. Please check your password or try again later.", username_updated_success: "Username updated successfully.", password_updated_success: "Password updated successfully.", confirm_action: "Confirm", cancel_action: "Cancel", password_fields_required_ar: "Password fields required.", password_fields_required_en: "Password fields required.", password_required_for_delete_ar: "Password required for deletion.", password_required_for_delete_en: "Password required for deletion.",
+            plan_free: "Free", plan_standard: "Standard", plan_pro: "Pro", plan_ultimate: "Ultimate", plan_annual: "Annual",
+            video_requires_plan_standard: "This video requires at least a Standard plan.",
+            video_requires_plan_pro: "This video requires at least a Pro plan.",
+            video_requires_plan_ultimate: "This video requires at least an Ultimate plan.",
+            video_requires_plan_annual: "This video requires at least an Annual plan."
+        },
+        ar: {
+            site_title: "SofagHub - سوفاج هاب", nav_home: "الرئيسية", nav_videos: "الفيديوهات", nav_subscriptions: "الاشتراكات", nav_settings: "الإعدادات", nav_login: "تسجيل الدخول", search_placeholder: "ابحث عن فيديوهات...", search_button_text: "بحث", welcome_title: "مرحباً بك في SofagHub!", site_subtitle_text: "موقع عربي مميز لمشاهدة السيكو سيكو العربي", suggested_for_you: "مقترحة لك", browse_videos_title: "تصفح الفيديوهات", subscription_plans_title: "خطط الاشتراك", 
+            free_plan_title: "الخطة المجانية", free_plan_price: "مجاني", free_feature_1: "فيديوهات مجانية محدودة", free_feature_2: "جودة منخفضة (SD)", free_feature_3: "مع إعلانات", free_feature_4: "بدون تحميل", start_free_btn: "ابدأ مجاناً", 
+            standard_plan_title: "الخطة القياسية", standard_duration_6months: "/6 أشهر", standard_feature_1: "ولوج للفيديوهات المجانية", standard_feature_2: "مشاهدة خالية من الإعلانات", standard_feature_3: "لا تشمل الفيديوهات المدفوعة", standard_feature_4: "بدون تحميل",
+            most_popular_badge: "الأكثر شيوعاً", pro_plan_title: "الخطة برو", monthly_text: "/شهرياً", pro_feature_1: "ولوج لكل الفيديوهات (المجانية والمدفوعة)", pro_feature_2: "جودة عالية (HD/1080p)", pro_feature_3: "مشاهدة بدون إعلانات", pro_feature_4: "دعم عملاء مخصص", pro_feature_5: "بدون تحميل", subscribe_now_btn: "اشترك الآن", 
+            ultimate_plan_title: "الخطة الفائقة", ultimate_feature_1: "جميع مزايا الخطة برو", ultimate_feature_2: "جودة فائقة (4K UHD)", ultimate_feature_3: "تحميل غير محدود للمحتوى", ultimate_feature_4: "دعم فني بأولوية قصوى 24/7", ultimate_feature_5: "وصول مبكر للمحتوى الجديد", choose_ultimate_btn: "اختر الخطة الفائقة",
+            annual_plan_title: "الخطة السنوية", annually_text: "/سنوياً", annual_feature_1: "كل شيء! جميع ميزات الخطة الفائقة", annual_feature_2: "توفير كبير على مدار العام", annual_feature_3: "أولوية قصوى في كل شيء", annual_feature_4: "هدايا وميزات حصرية", subscribe_annually_btn: "اشترك سنوياً",
+            settings_title: "إعدادات المظهر واللغة", theme_label: "المظهر:", language_label: "لغة الواجهة:", save_settings_btn: "حفظ الإعدادات", 
+            login_title_section: "تسجيل الدخول", email_label: "البريد الإلكتروني", email_placeholder: "example@mail.com", password_label: "كلمة المرور", password_placeholder: "********", login_btn: "تسجيل الدخول", no_account_text: "ليس لديك حساب؟", create_account_link: "أنشئ حساباً جديداً", 
+            create_account_title: "إنشاء حساب جديد", username_label: "اسم المستخدم", username_placeholder: "اسمك الفريد", password_placeholder_strong: "كلمة مرور قوية", confirm_password_label: "تأكيد كلمة المرور", confirm_password_placeholder: "أعد إدخال كلمة المرور", create_account_btn: "إنشاء حساب", already_have_account_text: "لديك حساب بالفعل؟", login_link_from_register: "سجل الدخول", 
+            password_warning_text: "تنبيه هام: لا يمكن استعادة كلمة المرور إذا نسيتها. الرجاء حفظها في مكان آمن أو استخدام تلميح قوي لتذكرها.", password_hint_label: "تلميح كلمة المرور (اختياري)", password_hint_placeholder: "مثال: اسم أول حيوان أليف",
+            footer_text: "سيكو سيكو عربي قريب.", 
+            modal_title: "محتوى حصري!", modal_description_generic: "هذا الفيديو يتطلب اشتراكًا مميزًا للوصول إليه.", modal_feature_all_videos: "جميع الفيديوهات (مجانية ومدفوعة)", modal_feature_high_quality: "جودة عالية تصل إلى 4K", modal_feature_no_ads: "بدون إعلانات مزعجة", modal_feature_download: "تحميل المحتوى", subscribe_now_btn_modal: "الاشتراك الآن", see_all_plans_link: "مشاهدة جميع الخطط", 
+            tag_free: "مجاني", tag_paid: "مدفوع", views_text: "مشاهدات", watch_now_btn_text: "شاهد الآن", premium_access_btn_text: "محتوى حصري", 
+            error_generic_ar: "حدث خطأ. حاول مرة أخرى.", error_generic_en: "An error occurred. Please try again.", error_loading_videos_ar: "حدث خطأ أثناء تحميل الفيديوهات. حاول لاحقاً.", error_loading_videos_en: "Error loading videos. Please try again later.", no_videos_ar: "لا توجد فيديوهات لعرضها حاليًا.", no_videos_en: "No videos to display at the moment.", password_mismatch_ar: "كلمتا المرور غير متطابقتين.", password_mismatch_en: "Passwords do not match.", password_short_ar: "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.", password_short_en: "Password must be at least 6 characters long.", error_logout_ar: "حدث خطأ أثناء تسجيل الخروج.", error_logout_en: "Error during logout.", search_no_results_ar: "لا توجد نتائج بحث تطابق '${query}'.", search_no_results_en: "No search results found for '${query}'.", settings_saved_ar: "تم حفظ الإعدادات بنجاح!", settings_saved_en: "Settings saved successfully!", theme_toggle_light: "التبديل إلى المظهر الفاتح", theme_toggle_dark: "التبديل إلى المظهر الداكن", video_token_error_ar: "خطأ في الحصول على إذن مشاهدة الفيديو. حاول مرة أخرى.", video_token_error_en: "Error getting video viewing permission. Please try again.",
+            manage_account_link: "إدارة الحساب", manage_account_title: "إدارة الحساب", current_username_label: "اسم المستخدم الحالي:", new_username_label: "اسم المستخدم الجديد:", new_username_placeholder: "اتركه فارغًا لعدم التغيير", update_username_btn: "تحديث اسم المستخدم", change_password_title: "تغيير كلمة المرور", current_password_label: "كلمة المرور الحالية:", new_password_label: "كلمة المرور الجديدة:", confirm_new_password_label: "تأكيد كلمة المرور الجديدة:", update_password_btn: "تحديث كلمة المرور", logout_confirm_title: "تأكيد تسجيل الخروج", logout_confirm_message: "هل أنت متأكد أنك تريد تسجيل الخروج؟", delete_account_confirm_title: "تأكيد حذف الحساب", delete_account_warning: "تحذير! هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع بياناتك واشتراكك (إن وجد) بشكل دائم. لن تتمكن من استعادة حسابك.", delete_account_prompt_password: "لتأكيد الحذف، يرجى إدخال كلمة المرور الحالية:", delete_account_success: "تم حذف حسابك بنجاح.", delete_account_failed: "فشل حذف الحساب. يرجى التحقق من كلمة المرور أو المحاولة مرة أخرى لاحقًا.", username_updated_success: "تم تحديث اسم المستخدم بنجاح.", password_updated_success: "تم تحديث كلمة المرور بنجاح.", confirm_action: "تأكيد", cancel_action: "إلغاء", password_fields_required_ar: "الرجاء ملء جميع حقول كلمة المرور.", password_fields_required_en: "Please fill all password fields.", password_required_for_delete_ar: "كلمة المرور مطلوبة لتأكيد الحذف.", password_required_for_delete_en: "Password required to confirm deletion.",
+            plan_free: "مجانية", plan_standard: "القياسية", plan_pro: "برو", plan_ultimate: "الفائقة", plan_annual: "السنوية",
+            video_requires_plan_standard: "هذا الفيديو يتطلب على الأقل الخطة القياسية.",
+            video_requires_plan_pro: "هذا الفيديو يتطلب على الأقل الخطة برو.",
+            video_requires_plan_ultimate: "هذا الفيديو يتطلب على الأقل الخطة الفائقة.",
+            video_requires_plan_annual: "هذا الفيديو يتطلب على الأقل الخطة السنوية."
+        }
+    };
+
+    let currentLang = localStorage.getItem('language') || 'ar';
+
+    function getTranslation(key, replacements = {}) {
+        let translation = translations[currentLang]?.[key] || translations['en']?.[key] || `TR:${key}`;
+        for (const placeholder in replacements) {
+            translation = translation.replace(`\${${placeholder}}`, replacements[placeholder]);
+        }
+        return translation;
+    }
+    
+    function showMessage(element, messageKey, isSuccess, duration = 5000, replacements = {}) {
+        if (!element) return;
+        const messageText = getTranslation(messageKey, replacements);
+        element.textContent = messageText;
+        const baseClass = element.id.includes('global') ? 'global-message' : 
+                          element.id.includes('auth') || element.id.includes('manageAccount') ? 'auth-message' : 'message';
+        element.className = `${baseClass} ${isSuccess ? 'success' : 'error'}`;
+        element.style.display = 'block';
+        if (duration > 0) {
+            setTimeout(() => {
+                if(element) element.style.display = 'none';
+            }, duration);
+        }
+    }
+
+    const planHierarchy = { 'free': 0, 'standard': 1, 'pro': 2, 'ultimate': 3, 'annual': 4 };
+    const videoAccessHierarchy = { 'free': 0, 'standard': 1, 'pro': 2, 'ultimate': 3, 'annual': 4 }; // For video types
+
+    function canUserAccessVideo(videoType, userPlan) {
+        const userPlanLevel = planHierarchy[userPlan || 'free'];
+        const requiredVideoPlanLevel = videoAccessHierarchy[videoType] || 0;
+        return userPlanLevel >= requiredVideoPlanLevel;
+    }
+
+
+    async function openVideoPlayer(video) {
+        if (!videoPlayerModal || !mainVideoPlayer || !videoPlayerTitle) return;
+
+        if (!canUserAccessVideo(video.type, currentUserData ? currentUserData.plan : 'free')) {
+            let requiredPlanKey;
+            switch(video.type) {
+                case 'standard': requiredPlanKey = 'video_requires_plan_standard'; break;
+                case 'pro': requiredPlanKey = 'video_requires_plan_pro'; break;
+                case 'ultimate': requiredPlanKey = 'video_requires_plan_ultimate'; break;
+                case 'annual': requiredPlanKey = 'video_requires_plan_annual'; break;
+                default: requiredPlanKey = 'modal_description_generic'; 
+            }
+            const modalDescriptionElement = premiumModal.querySelector('p[data-translate="modal_description_generic"]');
+            if(modalDescriptionElement) {
+                 modalDescriptionElement.textContent = getTranslation(requiredPlanKey);
+            }
+            openPremiumModal();
+            return;
+        }
+
+        try {
+            const tokenResponse = await fetch(`/api/request-video-token/${video.id}`, { method: 'POST' });
+            if (!tokenResponse.ok) {
+                const errorData = await tokenResponse.json().catch(() => ({}));
+                throw new Error(errorData.message || `Failed to get video token, status: ${tokenResponse.status}`);
+            }
+            const { token } = await tokenResponse.json();
+            if (!token) throw new Error("No token received from server.");
+            const videoStreamUrl = `/api/video-stream/${video.id}?token=${token}`;
+            mainVideoPlayer.src = videoStreamUrl;
+            videoPlayerTitle.textContent = video.title[currentLang] || video.title['ar'];
+            videoPlayerModal.style.display = 'flex';
+            body.style.overflow = 'hidden';
+            mainVideoPlayer.load();
+            mainVideoPlayer.play().catch(e => console.error("Video play failed:", e));
+        } catch (error) {
+            console.error("Error opening video player:", error);
+            showMessage(globalMessageDiv, 'video_token_error_ar', false);
+        }
+    }
+    function closeVideoPlayer() {
+        if (!videoPlayerModal || !mainVideoPlayer) return;
+        mainVideoPlayer.pause(); mainVideoPlayer.src = "";
+        videoPlayerModal.style.display = 'none'; body.style.overflow = '';
+    }
+    if (closeVideoPlayerModalBtn) closeVideoPlayerModalBtn.addEventListener('click', closeVideoPlayer);
+    if (videoPlayerModal) videoPlayerModal.addEventListener('click', (event) => { if (event.target === videoPlayerModal) closeVideoPlayer(); });
+    document.addEventListener('keydown', (event) => { if (event.key === "Escape" && videoPlayerModal && videoPlayerModal.style.display === 'flex') closeVideoPlayer();});
+
+    function createVideoCard(video) {
+        const lang = currentLang;
+        const card = document.createElement('div');
+        card.className = 'video-card'; card.dataset.type = video.type; card.dataset.videoId = video.id;
+        
+        const isPaidVideo = video.type !== 'free';
+        const tagText = isPaidVideo ? getTranslation('tag_paid') : getTranslation('tag_free');
+        const tagClass = isPaidVideo ? 'paid-tag-overlay' : 'free-tag-overlay';
+
+        let thumbnailUrl = video.thumbnail;
+        if (thumbnailUrl && !thumbnailUrl.startsWith('/') && !thumbnailUrl.startsWith('http')) thumbnailUrl = `/${thumbnailUrl}`;
+        
+        const canAccess = canUserAccessVideo(video.type, currentUserData ? currentUserData.plan : 'free');
+        const buttonTextKey = canAccess ? 'watch_now_btn_text' : 'premium_access_btn_text';
+        
+        let buttonClass = 'watch-now-btn';
+        if (isPaidVideo && !canAccess) {
+            buttonClass = 'premium-access-btn';
+        }
+
+        card.innerHTML = `
+            <div class="video-thumbnail ${isPaidVideo && !canAccess ? 'premium-video-placeholder-thumb' : ''}">
+                <span class="video-type-tag ${tagClass}">${tagText}</span>
+                <img src="${thumbnailUrl || 'images/placeholder.png'}" alt="${(video.altText?.[lang]) || video.title[lang]}" loading="lazy">
+                <div class="play-overlay"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" /></svg></div>
+            </div>
+            <div class="video-info">
+                <h4 class="video-title">${video.title[lang]}</h4>
+                <p class="video-meta"><span>${video.views[lang]} ${getTranslation('views_text')}</span></p>
+                <p class="video-description">${video.description[lang]}</p>
+                <button class="${buttonClass}" data-translate="${buttonTextKey}">${getTranslation(buttonTextKey)}</button>
+            </div>`;
+        const actionTrigger = card.querySelector('.video-thumbnail, .watch-now-btn, .premium-access-btn');
+        if (actionTrigger) {
+            actionTrigger.addEventListener('click', (e) => {
+                e.preventDefault();
+                openVideoPlayer(video); 
+            });
+        }
+        return card;
+    }
+
+    const suggestedVideosContainer = document.getElementById('suggestedVideosContainer');
+    const videoGridContainer = document.getElementById('videoGridContainer');
+
+    async function fetchAndPopulateVideos() {
+        try {
+            const response = await fetch('/api/videos');
+            if (!response.ok) {
+                throw new Error('error_loading_videos_ar');
+            }
+            allVideosData = await response.json();
+            await checkAuthState(); 
+
+            if (suggestedVideosContainer) {
+                suggestedVideosContainer.innerHTML = '';
+                allVideosData.filter(v => v.isSuggested).forEach(video => suggestedVideosContainer.appendChild(createVideoCard(video)));
+            }
+            if (videoGridContainer) {
+                videoGridContainer.innerHTML = '';
+                if(allVideosData.length > 0) allVideosData.forEach(video => videoGridContainer.appendChild(createVideoCard(video)));
+                else videoGridContainer.innerHTML = `<p class="no-results-message">${getTranslation('no_videos_ar')}</p>`;
+            }
+        } catch (error) {
+            console.error("Error fetching/populating videos:", error);
+            const errorKey = error.message === 'error_loading_videos_ar' ? error.message : 'error_loading_videos_ar';
+            if (videoGridContainer) videoGridContainer.innerHTML = `<p class="no-results-message">${getTranslation(errorKey)}</p>`;
+        }
+    }
+
+    if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
+
+    function setActiveSection(sectionId, fromLinkClick = true, updateUrl = true) {
+        contentSections.forEach(section => section.classList.remove('active'));
+        const targetSection = document.getElementById(sectionId);
+        if (targetSection) {
+            targetSection.classList.add('active');
+            if (updateUrl && fromLinkClick) window.location.hash = sectionId;
+
+            if (sectionId === 'login-section') {
+                if (loginForm) loginForm.style.display = 'block';
+                if (registerForm) registerForm.style.display = 'none';
+                if (authMessageDiv) authMessageDiv.style.display = 'none';
+                if (loginFormTitleEl) loginFormTitleEl.style.display = 'block';
+                if (registerFormTitleEl) registerFormTitleEl.style.display = 'none';
+            }
+        }
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.dataset.sectionTarget === sectionId) {
+                link.classList.add('active');
+            }
+        });
+        
+        if (fromLinkClick) {
+            const mainContentArea = document.querySelector('main');
+            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+            if (mainContentArea && window.scrollY > (mainContentArea.offsetTop - headerHeight - 10) ) {
+                 window.scrollTo({ top: (mainContentArea.offsetTop - headerHeight - 10), behavior: 'smooth' });
+            }
+        }
+    }
+
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = link.dataset.sectionTarget;
+            if (sectionId) {
+                setActiveSection(sectionId, true, true);
+                if (sectionId === 'manage-account-section') {
+                    if (currentUserData && currentUsernameDisplay) currentUsernameDisplay.value = currentUserData.username;
+                }
+            }
+        });
+    });
+    
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.substring(1);
+        const sectionId = hash.split('?')[0]; 
+        if (sectionId && document.getElementById(sectionId)) {
+            setActiveSection(sectionId, false, false); 
+        } else if (!sectionId) {
+            setActiveSection('home-section', false, false); 
+        }
+    });
+
+    function applyTheme(theme) {
+        if (theme === 'dark') body.classList.add('dark-theme');
+        else body.classList.remove('dark-theme');
+        if (themeToggleBtn) {
+            themeToggleBtn.setAttribute('data-theme', theme);
+            themeToggleBtn.setAttribute('aria-label', getTranslation(theme === 'dark' ? 'theme_toggle_light' : 'theme_toggle_dark'));
+        }
+    }
+    if (themeToggleBtn) themeToggleBtn.addEventListener('click', () => {
+        const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+        localStorage.setItem('theme', newTheme); applyTheme(newTheme);
+    });
+
+    function setLanguage(lang) {
+        currentLang = lang; localStorage.setItem('language', lang);
+        document.documentElement.lang = lang; document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+        document.querySelectorAll('[data-translate]').forEach(el => {
+            const key = el.dataset.translate;
+            const targetAttr = el.dataset.translateAttr;
+            const translation = getTranslation(key);
+            if (targetAttr) el.setAttribute(targetAttr, translation);
+            else el.textContent = translation;
+        });
+        document.querySelectorAll('[data-translate-placeholder]').forEach(el => el.placeholder = getTranslation(el.dataset.translatePlaceholder));
+        fetchAndPopulateVideos(); 
+        applyTheme(localStorage.getItem('theme') || 'light'); 
+        if(document.querySelector('#searchButton .search-button-text')) document.querySelector('#searchButton .search-button-text').textContent = getTranslation('search_button_text');
+        checkAuthState(); 
+    }
+    if (languageSelect) { languageSelect.value = currentLang; languageSelect.addEventListener('change', function () { setLanguage(this.value); }); }
+    if (saveAppearanceSettingsBtn) {
+        saveAppearanceSettingsBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            showMessage(globalMessageDiv, 'settings_saved_ar', true);
+        });
+    }
+
+    function updateAuthUI(isLoggedIn, userData = null) {
+        currentUserData = isLoggedIn ? userData : null;
+
+        if (isLoggedIn && userData) {
+            // Show Account button, hide Login button
+            if (headerLoginBtn) headerLoginBtn.style.display = 'none';
+            if (headerAccountBtn) headerAccountBtn.style.display = 'inline-block';
+            
+            // Set current username in the management form
+            if (currentUsernameDisplay) currentUsernameDisplay.value = userData.username;
+
+            // Refresh videos to apply access changes
+            if (allVideosData.length > 0 && (videoGridContainer || suggestedVideosContainer)) {
+                if (suggestedVideosContainer) {
+                    suggestedVideosContainer.innerHTML = '';
+                    allVideosData.filter(v => v.isSuggested).forEach(video => suggestedVideosContainer.appendChild(createVideoCard(video)));
+                }
+                if (videoGridContainer) {
+                    videoGridContainer.innerHTML = '';
+                    if(allVideosData.length > 0) allVideosData.forEach(video => videoGridContainer.appendChild(createVideoCard(video)));
+                    else videoGridContainer.innerHTML = `<p class="no-results-message">${getTranslation('no_videos_ar')}</p>`;
+                }
+            }
+        } else {
+            // Show Login button, hide Account button
+            if (headerLoginBtn) headerLoginBtn.style.display = 'inline-block';
+            if (headerAccountBtn) headerAccountBtn.style.display = 'none';
+
+            // Refresh videos as access rights have changed (logged out)
+            if (allVideosData.length > 0 && (videoGridContainer || suggestedVideosContainer)) {
+                 if (suggestedVideosContainer) {
+                    suggestedVideosContainer.innerHTML = '';
+                    allVideosData.filter(v => v.isSuggested).forEach(video => suggestedVideosContainer.appendChild(createVideoCard(video)));
+                }
+                if (videoGridContainer) {
+                    videoGridContainer.innerHTML = '';
+                    if(allVideosData.length > 0) allVideosData.forEach(video => videoGridContainer.appendChild(createVideoCard(video)));
+                    else videoGridContainer.innerHTML = `<p class="no-results-message">${getTranslation('no_videos_ar')}</p>`;
+                }
+            }
+        }
+    }
+    
+    async function checkAuthState() {
+        try {
+            const response = await fetch('/api/check-auth'); 
+            const data = await response.json();
+            updateAuthUI(data.loggedIn, data.user);
+        } catch (error) { console.error('Error checking auth state:', error); updateAuthUI(false); }
+    }
+    
+    if (switchToRegisterLink && switchToLoginLink && loginForm && registerForm) {
+        switchToRegisterLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            if (authMessageDiv) authMessageDiv.style.display = 'none';
+            if(loginFormTitleEl) loginFormTitleEl.style.display = 'none';
+            if(registerFormTitleEl) registerFormTitleEl.style.display = 'block';
+        });
+        switchToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerForm.style.display = 'none';
+            loginForm.style.display = 'block';
+            if (authMessageDiv) authMessageDiv.style.display = 'none';
+            if(loginFormTitleEl) loginFormTitleEl.style.display = 'block';
+            if(registerFormTitleEl) registerFormTitleEl.style.display = 'none';
+        });
+    }
+
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const username = document.getElementById('registerUsername').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+            const hint = document.getElementById('registerHint').value;
+            if (password !== confirmPassword) { showMessage(authMessageDiv, 'password_mismatch_ar', false); return; }
+            if (password.length < 6) { showMessage(authMessageDiv, 'password_short_ar', false); return; }
+            try {
+                const response = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password, hint }) });
+                const data = await response.json();
+                showMessage(authMessageDiv, data.messageKey || (data.success ? 'registration_success' : 'registration_failed'), data.success, 5000, data.replacements || {}); 
+                if (data.success && data.user) {
+                    updateAuthUI(true, data.user);
+                    setTimeout(() => {
+                        setActiveSection('home-section', true, true);
+                        registerForm.reset(); 
+                        if (loginForm) loginForm.style.display = 'block'; 
+                        if (registerForm) registerForm.style.display = 'none';
+                        if (loginFormTitleEl) loginFormTitleEl.style.display = 'block';
+                        if (registerFormTitleEl) registerFormTitleEl.style.display = 'none';
+                    }, 1500);
+                }
+            } catch (error) { showMessage(authMessageDiv, 'error_generic_ar', false); }
+        });
+    }
+    
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            try {
+                const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
+                const data = await response.json();
+                showMessage(authMessageDiv, data.messageKey || (data.success ? 'login_success' : 'login_failed'), data.success, 5000, data.replacements || {}); 
+                if (data.success && data.user) {
+                    updateAuthUI(true, data.user);
+                    setTimeout(() => {
+                        setActiveSection('home-section', true, true);
+                        loginForm.reset();
+                    }, 1500);
+                }
+            } catch (error) { showMessage(authMessageDiv, 'error_generic_ar', false); }
+        });
+    }
+    
+    // This is now triggered from the manage account page itself
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn'); // Re-declaring for this specific scope
+    const logoutBtnOnAccountPage = document.getElementById('logoutButtonFromAccountPage'); // Assuming you'll add a logout button there
+
+    if (updateUsernameBtn && newUsernameInput) {
+        updateUsernameBtn.addEventListener('click', async () => {
+            const newUsername = newUsernameInput.value.trim();
+            if (!newUsername) return; 
+            try {
+                const response = await fetch('/api/account/update-username', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ newUsername }) });
+                const data = await response.json();
+                showMessage(manageAccountMessageDiv, data.messageKey || 'error_generic_ar', data.success, 5000, data.replacements || {});
+                if (data.success) {
+                    newUsernameInput.value = '';
+                    if (currentUsernameDisplay) currentUsernameDisplay.value = data.newUsername;
+                    if(currentUserData) currentUserData.username = data.newUsername; 
+                }
+            } catch (error) { showMessage(manageAccountMessageDiv, 'error_generic_ar', false); }
+        });
+    }
+    if (updatePasswordBtn && currentPasswordInput && newPasswordInput && confirmNewPasswordInput) {
+        updatePasswordBtn.addEventListener('click', async () => {
+            const currentPassword = currentPasswordInput.value; const newPassword = newPasswordInput.value; const confirmNewPassword = confirmNewPasswordInput.value;
+            if (!currentPassword || !newPassword || !confirmNewPassword) { showMessage(manageAccountMessageDiv, 'password_fields_required_ar', false); return; }
+            if (newPassword.length < 6) { showMessage(manageAccountMessageDiv, 'password_short_ar', false); return; }
+            if (newPassword !== confirmNewPassword) { showMessage(manageAccountMessageDiv, 'password_mismatch_ar', false); return; }
+            try {
+                const response = await fetch('/api/account/update-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentPassword, newPassword, confirmNewPassword }) });
+                const data = await response.json();
+                showMessage(manageAccountMessageDiv, data.messageKey || 'error_generic_ar', data.success);
+                if (data.success) { currentPasswordInput.value = ''; newPasswordInput.value = ''; confirmNewPasswordInput.value = '';}
+            } catch (error) { showMessage(manageAccountMessageDiv, 'error_generic_ar', false); }
+        });
+    }
+    
+    const searchButton = document.getElementById('searchButton');
+    const searchInput = document.getElementById('searchInput');
+    let noResultsEl = null;
+    if (searchButton && searchInput) {
+        const performSearch = () => {
+            const query = searchInput.value.trim().toLowerCase();
+            setActiveSection('videos-section', true, true); 
+            if (noResultsEl && noResultsEl.parentNode) noResultsEl.parentNode.removeChild(noResultsEl); noResultsEl = null;
+            if (videoGridContainer) {
+                if (query) filterVideosBySearch(query);
+                else { 
+                    videoGridContainer.innerHTML = ''; 
+                    if(allVideosData.length > 0) allVideosData.forEach(video => videoGridContainer.appendChild(createVideoCard(video)));
+                    else videoGridContainer.innerHTML = `<p class="no-results-message">${getTranslation('no_videos_ar')}</p>`;
+                }
+            }
+        };
+        searchButton.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); performSearch(); }});
+        searchInput.addEventListener('input', () => { if (searchInput.value.trim() === '') performSearch(); }); 
+    }
+    function filterVideosBySearch(query) {
+        if (!videoGridContainer) return;
+        videoGridContainer.innerHTML = ''; 
+        let found = false;
+        allVideosData.forEach(videoData => {
+            const title = (videoData.title[currentLang] || videoData.title['ar'] || '').toLowerCase();
+            const description = (videoData.description[currentLang] || videoData.description['ar'] || '').toLowerCase();
+            if (title.includes(query) || description.includes(query) || videoData.id.toLowerCase().includes(query)) {
+                videoGridContainer.appendChild(createVideoCard(videoData));
+                found = true;
+            }
+        });
+        
+        if (noResultsEl && noResultsEl.parentNode) { noResultsEl.parentNode.removeChild(noResultsEl); noResultsEl = null; }
+        if (!found && query) {
+            noResultsEl = document.createElement('p');
+            noResultsEl.className = 'no-results-message';
+            noResultsEl.textContent = getTranslation('search_no_results_ar', { query: searchInput.value.trim() });
+            videoGridContainer.appendChild(noResultsEl);
+        }
+    }
+
+    const closeModalBtn = premiumModal?.querySelector('.close-modal-btn');
+    const modalSubscribeBtn = document.getElementById('modalSubscribeBtn');
+    const modalSeePlansBtn = document.getElementById('modalSeePlansBtn');
+    function openPremiumModal() { if (premiumModal) premiumModal.style.display = 'flex'; body.style.overflow = 'hidden';}
+    function closePremiumModal() { if (premiumModal) premiumModal.style.display = 'none'; body.style.overflow = '';}
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closePremiumModal);
+    if (modalSubscribeBtn) modalSubscribeBtn.addEventListener('click', () => { closePremiumModal(); });
+    if (modalSeePlansBtn) modalSeePlansBtn.addEventListener('click', (e) => { e.preventDefault(); closePremiumModal(); setActiveSection('subscription-section', true, true); });
+    if (premiumModal) premiumModal.addEventListener('click', (event) => { if (event.target === premiumModal) closePremiumModal(); });
+    document.addEventListener('keydown', function (event) { if (event.key === "Escape" && premiumModal?.style.display === 'flex') closePremiumModal();});
+    
+    async function initializePage() {
+        applyTheme(localStorage.getItem('theme') || 'light'); 
+        await checkAuthState(); 
+        setLanguage(currentLang); 
+        
+        let initialSectionId = 'home-section';
+        const hash = window.location.hash.substring(1);
+        const sectionIdFromHash = hash.split('?')[0];
+
+        const isLoggedIn = currentUserData !== null;
+
+        if (sectionIdFromHash && document.getElementById(sectionIdFromHash)) { 
+            if (!(sectionIdFromHash === 'login-section' && isLoggedIn)) {
+                initialSectionId = sectionIdFromHash;
+            }
+        } else if (isLoggedIn && document.getElementById('login-section')?.classList.contains('active')) {
+            initialSectionId = 'home-section';
+        }
+        
+        setActiveSection(initialSectionId, false, true); 
+        if(!window.location.hash && initialSectionId !== 'home-section') {
+            window.location.hash = initialSectionId;
+        } else if (!window.location.hash && initialSectionId === 'home-section') {
+            window.location.hash = 'home-section';
+        }
+
+
+        console.log("SofagHub Initialized with hash routing.");
+    }
+    initializePage();
+});
+
+
+===== server.js =====
+const express = require('express');
+const fs = require('fs-extra');
+const path = require('path');
+const sqlite3 = require('sqlite3').verbose();
+const bcryptActual = require('bcryptjs'); 
+const session = require('express-session');
+const cookieParser = require('cookie-parser');
+const { Telegraf, Markup } = require('telegraf');
+const axios = require('axios');
+const crypto = require('crypto');
+
+const app = express();
+const PORT = process.env.PORT || 8080; // Use environment variable for port if available
+const BOT_TOKEN = "7441862651:AAFGYKjv1TrPgNss8VgcxeSqUR8R_XoajAs";
+const YOUR_ADMIN_TELEGRAM_ID = 6988696258; // !!! REPLACE 0 WITH YOUR ACTUAL TELEGRAM USER ID (INTEGER) !!!
+
+console.log('Server.js: Starting up...');
+const videoTokensStore = new Map();
+
+const dbPath = path.join(__dirname, 'users.db');
+const db = new sqlite3.Database(dbPath, (err) => {
+    if (err) {
+        console.error('Database connection error:', err.message);
+        process.exit(1); // Exit if DB connection fails
+    } else {
+        console.log('Successfully connected to SQLite database (users.db).');
+        db.serialize(() => {
+            // Ensure 'plan_start_date' and 'plan_expiry_date' columns exist for timed plans
+            db.run(`ALTER TABLE users ADD COLUMN plan_start_date DATETIME`, (errAlter) => {
+                if (errAlter && !errAlter.message.includes('duplicate column name')) console.error("Error adding 'plan_start_date':", errAlter.message);
+            });
+            db.run(`ALTER TABLE users ADD COLUMN plan_expiry_date DATETIME`, (errAlter) => {
+                if (errAlter && !errAlter.message.includes('duplicate column name')) console.error("Error adding 'plan_expiry_date':", errAlter.message);
+            });
+
+            db.run(`CREATE TABLE IF NOT EXISTS users (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                username TEXT UNIQUE NOT NULL,
+                email TEXT UNIQUE NOT NULL,
+                password_hash TEXT NOT NULL,
+                hint TEXT,
+                plan TEXT DEFAULT 'free',
+                plan_start_date DATETIME,
+                plan_expiry_date DATETIME 
+            )`, (errDb) => {
+                if (errDb) console.error("Error creating/altering users table:", errDb.message);
+                else console.log("'users' table schema verified/updated.");
+            });
+
+            db.run(`CREATE TABLE IF NOT EXISTS videos (
+                id TEXT PRIMARY KEY, 
+                title_ar TEXT, title_en TEXT, 
+                thumbnail_path TEXT,
+                alt_text_ar TEXT, alt_text_en TEXT, 
+                views_ar TEXT DEFAULT '0', views_en TEXT DEFAULT '0', 
+                type TEXT DEFAULT 'free', /* 'free', 'standard', 'pro', 'ultimate', 'annual' */
+                description_ar TEXT, description_en TEXT, 
+                is_suggested INTEGER DEFAULT 0, 
+                video_file_path TEXT,
+                uploaded_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            )`, (errDb) => {
+                if (errDb) console.error("Error creating videos table:", errDb.message);
+                else console.log("'videos' table schema verified.");
+            });
+        });
+    }
+});
+
+const videosBaseDir = path.join(__dirname, 'videos_data');
+const videoFilesDir = path.join(videosBaseDir, 'files');
+const videoThumbnailsDir = path.join(videosBaseDir, 'thumbnails');
+fs.ensureDirSync(videoFilesDir);
+fs.ensureDirSync(videoThumbnailsDir);
+
+app.use(cookieParser());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+const sessionMiddleware = session({
+    name: 'sofaghub.sid', 
+    secret: process.env.SESSION_SECRET || 'a_much_more_secure_and_random_secret_key_!@#$%^_for_sofaghub_sessions_12345_very_long', 
+    resave: false, 
+    saveUninitialized: false, 
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+        httpOnly: true, 
+        maxAge: 7 * 24 * 60 * 60 * 1000, 
+        sameSite: 'lax' 
+    },
+    // store: new SQLiteStore({ db: 'sessions.db', dir: __dirname }) // Optional: for persistent sessions across restarts
+});
+app.use(sessionMiddleware);
+
+console.log('Server.js: Basic middlewares configured.');
+app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use('/videos_data/thumbnails', express.static(videoThumbnailsDir)); // Serve thumbnails correctly
+app.use(express.static(__dirname)); // Serve static files like HTML, CSS, client-side JS
+
+function ensureAuthenticated(req, res, next) {
+    if (req.session && req.session.userId) {
+        return next();
+    }
+    res.status(401).json({ success: false, messageKey: 'auth_required' }); // Use messageKey
+}
+
+// Plan details mapping
+const planDetailsMap = {
+    free: { name: 'الخطة المجانية', videoAccess: 'free' },
+    standard: { name: 'الخطة القياسية', durationMonths: 6, videoAccess: 'standard' }, // Access up to standard videos
+    pro: { name: 'الخطة برو', durationMonths: 1, videoAccess: 'pro' },       // Access up to pro videos
+    ultimate: { name: 'الخطة الفائقة', durationMonths: 1, videoAccess: 'ultimate' }, // Access up to ultimate
+    annual: { name: 'الخطة السنوية', durationMonths: 12, videoAccess: 'annual' }   // Access up to annual (all)
+};
+
+
+app.post('/api/register', async (req, res) => {
+    const { username, email, password, hint } = req.body;
+    if (!username || !email || !password) return res.status(400).json({ success: false, messageKey: 'fill_all_fields' });
+    if (password.length < 6) return res.status(400).json({ success: false, messageKey: 'password_short_ar' });
+    try {
+        const hashedPassword = await bcryptActual.hash(password, 10);
+        const sql = `INSERT INTO users (username, email, password_hash, hint, plan) VALUES (?, ?, ?, ?, 'free')`;
+        db.run(sql, [username, email, hashedPassword, hint || null], function (err) {
+            if (err) {
+                let messageKey = 'registration_failed';
+                if (err.message.includes('UNIQUE constraint failed')) {
+                    messageKey = err.message.includes('email') ? 'email_exists' : 'username_exists';
+                }
+                console.error("[API /api/register] SQL Error:", err.message);
+                return res.status(err.message.includes('UNIQUE') ? 409 : 500).json({ success: false, messageKey });
+            }
+            req.session.regenerate(function(regenErr) { 
+                if (regenErr) console.error("Session regeneration error after register:", regenErr);
+                req.session.userId = this.lastID;
+                req.session.username = username;
+                req.session.userPlan = 'free'; 
+                console.log('[API /api/register] User registered:', username, 'Plan: free');
+                res.status(201).json({ success: true, messageKey: 'registration_success', user: { id: this.lastID, username: username, plan: 'free' } });
+            }.bind(this));
+        });
+    } catch (error) {
+        console.error("[API /api/register] Catch Error:", error);
+        res.status(500).json({ success: false, messageKey: 'error_generic_ar' });
+    }
+});
+
+app.post('/api/login', (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) return res.status(400).json({ success: false, messageKey: 'email_password_required' });
+    const sql = `SELECT id, username, password_hash, plan, plan_expiry_date FROM users WHERE email = ?`;
+    db.get(sql, [email], async (err, user) => {
+        if (err) {
+            console.error("[API /api/login] SQL Error:", err.message);
+            return res.status(500).json({ success: false, messageKey: 'error_generic_ar' });
+        }
+        if (!user) return res.status(401).json({ success: false, messageKey: 'invalid_credentials' });
+        
+        const passwordMatch = await bcryptActual.compare(password, user.password_hash);
+        if (!passwordMatch) return res.status(401).json({ success: false, messageKey: 'invalid_credentials' });
+
+        let currentPlan = user.plan;
+        // Check if the plan has expired (for non-free plans)
+        if (user.plan !== 'free' && user.plan_expiry_date) {
+            if (new Date(user.plan_expiry_date) < new Date()) {
+                currentPlan = 'free'; // Downgrade to free if expired
+                // Optionally, update the database here too
+                db.run("UPDATE users SET plan = 'free', plan_start_date = NULL, plan_expiry_date = NULL WHERE id = ?", [user.id], (updateErr) => {
+                    if (updateErr) console.error(`Error reverting plan for user ${user.id}:`, updateErr.message);
+                    else console.log(`User ${user.username}'s plan ${user.plan} expired. Reverted to free.`);
+                });
+            }
+        }
+
+        req.session.regenerate(function(regenErr) {
+            if (regenErr) {
+                console.error("Session regeneration error:", regenErr);
+                return res.status(500).json({ success: false, messageKey: 'session_error' });
+            }
+            req.session.userId = user.id;
+            req.session.username = user.username;
+            req.session.userPlan = currentPlan;
+            console.log('[API /api/login] User logged in:', user.username, 'Plan:', currentPlan);
+            res.json({ success: true, messageKey: 'login_success', user: { id: user.id, username: user.username, plan: currentPlan } });
+        });
+    });
+});
+
+app.get('/api/logout', (req, res) => {
+    if (req.session) {
+        req.session.destroy(err => {
+            if (err) {
+                console.error("[API /api/logout] Error destroying session:", err);
+                return res.status(500).json({ success: false, messageKey: 'logout_failed' });
+            }
+            res.clearCookie('sofaghub.sid');
+            console.log('[API /api/logout] User logged out.');
+            res.json({ success: true, messageKey: 'logout_success' });
+        });
+    } else {
+        res.clearCookie('sofaghub.sid'); // Still clear cookie if somehow session object is not there
+        res.json({ success: true, messageKey: 'no_active_session' });
+    }
+});
+
+app.get('/api/check-auth', (req, res) => {
+    if (req.session && req.session.userId && req.session.username) {
+        // Re-check plan expiry on each auth check for robustness
+        db.get("SELECT plan, plan_expiry_date FROM users WHERE id = ?", [req.session.userId], (err, user) => {
+            if (err || !user) {
+                // If user not found in DB but session exists, destroy session
+                req.session.destroy(() => {
+                    res.clearCookie('sofaghub.sid');
+                    return res.json({ loggedIn: false });
+                });
+                return;
+            }
+            
+            let currentPlan = user.plan;
+            if (user.plan !== 'free' && user.plan_expiry_date && new Date(user.plan_expiry_date) < new Date()) {
+                currentPlan = 'free';
+                req.session.userPlan = 'free'; // Update session immediately
+                db.run("UPDATE users SET plan = 'free', plan_start_date = NULL, plan_expiry_date = NULL WHERE id = ?", [req.session.userId], (updateErr) => {
+                    if (updateErr) console.error(`Error reverting plan for user ${req.session.userId} during auth check:`, updateErr.message);
+                });
+            } else {
+                 req.session.userPlan = user.plan; // Ensure session plan is up-to-date
+            }
+            res.json({ loggedIn: true, user: { username: req.session.username, plan: req.session.userPlan } });
+        });
+    } else {
+        res.json({ loggedIn: false });
+    }
+});
+
+app.get('/api/account/info', ensureAuthenticated, (req, res) => {
+    const sql = `SELECT username, email, plan FROM users WHERE id = ?`;
+    db.get(sql, [req.session.userId], (err, user) => {
+        if (err || !user) {
+            console.error("[API /api/account/info] Error or user not found:", err ? err.message : "User not found");
+            return res.status(404).json({ success: false, messageKey: "user_info_not_found" });
+        }
+        res.json({ success: true, user: { username: user.username, email: user.email, plan: user.plan } });
+    });
+});
+
+app.post('/api/account/update-username', ensureAuthenticated, async (req, res) => {
+    const { newUsername } = req.body;
+    const userId = req.session.userId;
+    if (!newUsername || newUsername.trim().length < 3) return res.status(400).json({ success: false, messageKey: "username_too_short" });
+    const checkSql = `SELECT id FROM users WHERE username = ? AND id != ?`;
+    db.get(checkSql, [newUsername.trim(), userId], (err, existingUser) => {
+        if (err) { console.error("[API /update-username] SQL Error:", err.message); return res.status(500).json({ success: false, messageKey: "error_generic_ar" }); }
+        if (existingUser) return res.status(409).json({ success: false, messageKey: "username_exists" });
+        const updateSql = `UPDATE users SET username = ? WHERE id = ?`;
+        db.run(updateSql, [newUsername.trim(), userId], function(updateErr) {
+            if (updateErr) { console.error("[API /update-username] SQL Error:", updateErr.message); return res.status(500).json({ success: false, messageKey: "username_update_failed" }); }
+            req.session.username = newUsername.trim();
+            res.json({ success: true, messageKey: "username_updated_success", newUsername: newUsername.trim() });
+        });
+    });
+});
+
+app.post('/api/account/update-password', ensureAuthenticated, async (req, res) => {
+    const { currentPassword, newPassword, confirmNewPassword } = req.body;
+    const userId = req.session.userId;
+    if (!currentPassword || !newPassword || !confirmNewPassword) return res.status(400).json({ success: false, messageKey: "password_fields_required_ar" });
+    if (newPassword.length < 6) return res.status(400).json({ success: false, messageKey: "password_short_ar" });
+    if (newPassword !== confirmNewPassword) return res.status(400).json({ success: false, messageKey: "password_mismatch_ar" });
+    const sqlGet = `SELECT password_hash FROM users WHERE id = ?`;
+    db.get(sqlGet, [userId], async (err, user) => {
+        if (err || !user) return res.status(500).json({ success: false, messageKey: "user_data_fetch_error" });
+        const currentPasswordMatch = await bcryptActual.compare(currentPassword, user.password_hash);
+        if (!currentPasswordMatch) return res.status(401).json({ success: false, messageKey: "current_password_incorrect" });
+        const newHashedPassword = await bcryptActual.hash(newPassword, 10);
+        const sqlUpdate = `UPDATE users SET password_hash = ? WHERE id = ?`;
+        db.run(sqlUpdate, [newHashedPassword, userId], function(updateErr) {
+            if (updateErr) { console.error("[API /update-password] SQL Error:", updateErr.message); return res.status(500).json({ success: false, messageKey: "password_update_failed" }); }
+            res.json({ success: true, messageKey: "password_updated_success" });
+        });
+    });
+});
+
+app.post('/api/account/delete', ensureAuthenticated, async (req, res) => {
+    const { password } = req.body;
+    const userId = req.session.userId;
+    if (!password) return res.status(400).json({ success: false, messageKey: "password_required_for_delete_ar" });
+    const sqlGet = `SELECT password_hash FROM users WHERE id = ?`;
+    db.get(sqlGet, [userId], async (err, user) => {
+        if (err || !user) return res.status(500).json({ success: false, messageKey: "user_data_fetch_error" });
+        const passwordMatch = await bcryptActual.compare(password, user.password_hash);
+        if (!passwordMatch) return res.status(401).json({ success: false, messageKey: "delete_account_failed_password" });
+        const sqlDelete = `DELETE FROM users WHERE id = ?`;
+        db.run(sqlDelete, [userId], function(deleteErr) {
+            if (deleteErr) { console.error("[API /delete-account] SQL Error:", deleteErr.message); return res.status(500).json({ success: false, messageKey: "delete_account_failed" }); }
+            req.session.destroy(sessionErr => {
+                if (sessionErr) console.error("Error destroying session post-delete:", sessionErr);
+                res.clearCookie('sofaghub.sid');
+                res.json({ success: true, messageKey: "delete_account_success" });
+            });
+        });
+    });
+});
+
+app.get('/api/videos', (req, res) => {
+    const sql = `SELECT id, title_ar, title_en, thumbnail_path, alt_text_ar, alt_text_en, views_ar, views_en, type, description_ar, description_en, is_suggested FROM videos ORDER BY uploaded_at DESC`;
+    db.all(sql, [], (err, rows) => {
+        if (err) return res.status(500).json({ success: false, messageKey: 'error_loading_videos_ar' });
+        const videosData = rows.map(row => ({
+            id: row.id, title: { ar: row.title_ar, en: row.title_en }, thumbnail: row.thumbnail_path,
+            altText: { ar: row.alt_text_ar, en: row.alt_text_en }, views: { ar: row.views_ar, en: row.views_en },
+            type: row.type || 'free', // Ensure type is always present, default to 'free'
+            description: { ar: row.description_ar, en: row.description_en }, isSuggested: row.is_suggested === 1,
+        }));
+        res.json(videosData);
+    });
+});
+
+app.post('/api/request-video-token/:videoId', (req, res) => {
+    const videoId = req.params.videoId;
+    const sqlCheckVideo = `SELECT type FROM videos WHERE id = ?`;
+    db.get(sqlCheckVideo, [videoId], (err, video) => {
+        if (err || !video) return res.status(404).json({ success: false, messageKey: "video_not_found" });
+
+        // Check user's plan against video type for paid videos
+        const videoType = video.type || 'free';
+        let userPlan = 'free'; // Default for non-logged-in users
+        if (req.session && req.session.userId && req.session.userPlan) {
+            userPlan = req.session.userPlan;
+        }
+
+        const planHierarchy = { 'free': 0, 'standard': 1, 'pro': 2, 'ultimate': 3, 'annual': 4 };
+        const videoAccessHierarchy = { 'free': 0, 'standard': 1, 'pro': 2, 'ultimate': 3, 'annual': 4 };
+
+        const userPlanLevel = planHierarchy[userPlan];
+        const requiredVideoPlanLevel = videoAccessHierarchy[videoType];
+        
+        if (userPlanLevel < requiredVideoPlanLevel) {
+            return res.status(403).json({ success: false, messageKey: `video_requires_plan_${videoType}`, requiredPlan: videoType });
+        }
+
+        const token = crypto.randomBytes(16).toString('hex');
+        const expiresAt = Date.now() + (15 * 60 * 1000); // Token expires in 15 minutes
+        videoTokensStore.set(token, { videoId, expiresAt, sessionId: req.sessionID, userId: req.session.userId }); // Store userId too for stricter checks if needed
+        console.log(`[API /request-video-token] Token generated for video ${videoId} (user: ${req.session.username || 'guest'}): ${token}`);
+        res.json({ success: true, token });
+    });
+});
+
+app.get('/api/video-stream/:videoId', (req, res) => {
+    const videoId = req.params.videoId;
+    const clientToken = req.query.token;
+    if (!clientToken) return res.status(401).send("Access token required.");
+    const tokenData = videoTokensStore.get(clientToken);
+    
+    // Stricter token validation: Check session ID and user ID if user was logged in when token was issued
+    let sessionMatch = true;
+    if (tokenData && tokenData.userId) { // If token was issued to a logged-in user
+        sessionMatch = tokenData.sessionId === req.sessionID && tokenData.userId === req.session.userId;
+    } else if (tokenData && !tokenData.userId) { // Token issued to a guest
+        sessionMatch = tokenData.sessionId === req.sessionID;
+    }
+
+
+    if (!tokenData || tokenData.videoId !== videoId || Date.now() > tokenData.expiresAt || !sessionMatch) {
+        if(tokenData && Date.now() > tokenData.expiresAt) videoTokensStore.delete(clientToken); // Clean up expired token
+        console.warn(`[API /video-stream] Invalid token for ${videoId}. Token: ${clientToken}, Session: ${req.sessionID}, User: ${req.session.userId}`);
+        return res.status(403).send("Invalid or expired access token, or session mismatch.");
+    }
+    
+    const sql = `SELECT video_file_path FROM videos WHERE id = ?`;
+    db.get(sql, [videoId], (err, row) => {
+        if (err || !row || !row.video_file_path) return res.status(404).send("Video not found in database or path missing.");
+        const videoPathOnServer = path.join(__dirname, row.video_file_path);
+        fs.stat(videoPathOnServer, (statErr, stats) => {
+            if (statErr) return res.status(statErr.code === 'ENOENT' ? 404 : 500).send("Video file error.");
+            const fileSize = stats.size;
+            const range = req.headers.range;
+            const videoExtension = path.extname(row.video_file_path).slice(1) || 'mp4';
+            if (range) {
+                const parts = range.replace(/bytes=/, "").split("-");
+                const start = parseInt(parts[0], 10);
+                let end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+                if (start >= fileSize || end >= fileSize || start > end ) { res.status(416).send('Requested range not satisfiable'); return; }
+                const chunksize = (end - start) + 1;
+                const file = fs.createReadStream(videoPathOnServer, { start, end });
+                const head = { 'Content-Range': `bytes ${start}-${end}/${fileSize}`, 'Accept-Ranges': 'bytes', 'Content-Length': chunksize, 'Content-Type': `video/${videoExtension}` };
+                res.writeHead(206, head); file.pipe(res);
+            } else {
+                const head = { 'Content-Length': fileSize, 'Content-Type': `video/${videoExtension}`, 'Accept-Ranges': 'bytes' };
+                res.writeHead(200, head); fs.createReadStream(videoPathOnServer).pipe(res);
+            }
+        });
+    });
+});
+
+// --- Telegram Bot ---
+const bot = new Telegraf(BOT_TOKEN);
+const userStates = {}; // For multi-step operations like video upload
+
+// Middleware to check if the user is an admin
+const isAdmin = (ctx, next) => {
+    if (ctx.from.id === YOUR_ADMIN_TELEGRAM_ID) {
+        return next();
+    }
+    return ctx.reply('ليس لديك صلاحية استخدام هذا الأمر.');
+};
+
+bot.start((ctx) => { 
+    if (ctx.from.id === YOUR_ADMIN_TELEGRAM_ID) {
+        ctx.reply('أهلاً بك أيها المدير! يمكنك استخدام الأوامر الإدارية:\n/stats - عرض الإحصائيات\n/addpaid1 [username] - إضافة خطة قياسية\n/delpaid1 [username] - حذف خطة قياسية\n... وهكذا لباقي الخطط (addpaid2/delpaid2, addpaid3/delpaid3, addpaid4/delpaid4).\n\nلرفع فيديو، أرسل الفيديو مباشرة.');
+    } else {
+        ctx.reply('مرحباً بك في بوت SofagHub! يمكنك استخدامه لرفع الفيديوهات إذا كنت مساهماً معتمداً.');
+    }
+    userStates[ctx.from.id] = { step: 'awaiting_video_or_command' }; 
+});
+
+bot.command('cancel', (ctx) => { 
+    const userId = ctx.from.id; 
+    if (userStates[userId] && userStates[userId].step !== 'awaiting_video_or_command') { 
+        delete userStates[userId]; 
+        ctx.reply('تم إلغاء العملية الحالية.'); 
+    } else { 
+        ctx.reply('لا توجد عملية نشطة لإلغائها.'); 
+    }
+    userStates[userId] = { step: 'awaiting_video_or_command' }; // Reset state
+});
+
+// --- Admin Commands ---
+bot.command('stats', isAdmin, async (ctx) => {
+    try {
+        await ctx.replyWithChatAction('typing');
+        const totalUsers = await new Promise((resolve, reject) => {
+            db.get("SELECT COUNT(*) as count FROM users", (err, row) => err ? reject(err) : resolve(row.count));
+        });
+        const usersByPlan = await new Promise((resolve, reject) => {
+            db.all("SELECT plan, COUNT(*) as count FROM users GROUP BY plan", (err, rows) => {
+                if (err) return reject(err);
+                const plans = { free: 0, standard: 0, pro: 0, ultimate: 0, annual: 0 };
+                rows.forEach(row => { if (plans.hasOwnProperty(row.plan)) plans[row.plan] = row.count; });
+                resolve(plans);
+            });
+        });
+
+        let message = `📊 <b>إحصائيات SofagHub</b> 📊\n\n`;
+        message += `👥 <b>إجمالي المستخدمين:</b> ${totalUsers}\n\n`;
+        message += `📜 <b>توزيع الخطط:</b>\n`;
+        message += `  - ${planDetailsMap.free.name}: ${usersByPlan.free}\n`;
+        message += `  - ${planDetailsMap.standard.name}: ${usersByPlan.standard}\n`;
+        message += `  - ${planDetailsMap.pro.name}: ${usersByPlan.pro}\n`;
+        message += `  - ${planDetailsMap.ultimate.name}: ${usersByPlan.ultimate}\n`;
+        message += `  - ${planDetailsMap.annual.name}: ${usersByPlan.annual}\n`;
+        
+        // You can add more stats here (e.g., total videos, views, etc.)
+
+        ctx.replyWithHTML(message, Markup.inlineKeyboard([
+            Markup.button.callback('إرسال بيانات المستخدمين (ملف TXT)', 'admin_get_users_txt')
+        ]));
+
+    } catch (error) {
+        console.error("[BOT /stats] Error:", error);
+        ctx.reply('حدث خطأ أثناء جلب الإحصائيات.');
+    }
+});
+
+bot.action('admin_get_users_txt', isAdmin, async (ctx) => {
+    try {
+        await ctx.answerCbQuery("جاري تجهيز الملف...");
+        await ctx.replyWithChatAction('upload_document');
+        db.all("SELECT id, username, email, password_hash, hint, plan, strftime('%Y-%m-%d %H:%M', plan_start_date) as plan_start, strftime('%Y-%m-%d %H:%M', plan_expiry_date) as plan_expiry FROM users", async (err, rows) => {
+            if (err) {
+                console.error("[BOT get_users_txt] DB Error:", err);
+                return ctx.reply("خطأ في جلب بيانات المستخدمين من قاعدة البيانات.");
+            }
+            if (!rows || rows.length === 0) {
+                return ctx.reply("لا يوجد مستخدمون لعرضهم.");
+            }
+
+            let txtContent = "بيانات مستخدمي SofagHub:\n=========================\n\n";
+            rows.forEach(user => {
+                txtContent += `المستخدم: ${user.username} (ID: ${user.id})\n`;
+                txtContent += `  الإيميل: ${user.email}\n`;
+                txtContent += `  كلمة المرور (Hash): ${user.password_hash}\n`; // Never store/send plain text passwords
+                txtContent += `  التلميح: ${user.hint || 'لا يوجد'}\n`;
+                txtContent += `  الخطة الحالية: ${planDetailsMap[user.plan]?.name || user.plan}\n`;
+                if (user.plan_start) txtContent += `  تاريخ بدء الخطة: ${user.plan_start}\n`;
+                if (user.plan_expiry) txtContent += `  تاريخ انتهاء الخطة: ${user.plan_expiry}\n`;
+                txtContent += `-------------------------\n`;
+            });
+
+            const fileName = `sofaghub_users_data_${new Date().toISOString().split('T')[0]}.txt`;
+            await ctx.replyWithDocument({ source: Buffer.from(txtContent, 'utf-8'), filename: fileName });
+        });
+    } catch (error) {
+        console.error("[BOT admin_get_users_txt] Error:", error);
+        ctx.reply("حدث خطأ أثناء إنشاء ملف بيانات المستخدمين.");
+    }
+});
+
+const planCommands = [
+    { type: 'standard', commandBase: 'paid1', name: planDetailsMap.standard.name, durationMonths: planDetailsMap.standard.durationMonths },
+    { type: 'pro', commandBase: 'paid2', name: planDetailsMap.pro.name, durationMonths: planDetailsMap.pro.durationMonths },
+    { type: 'ultimate', commandBase: 'paid3', name: planDetailsMap.ultimate.name, durationMonths: planDetailsMap.ultimate.durationMonths },
+    { type: 'annual', commandBase: 'paid4', name: planDetailsMap.annual.name, durationMonths: planDetailsMap.annual.durationMonths }
+];
+
+planCommands.forEach(plan => {
+    // Add plan command
+    bot.command(`add${plan.commandBase}`, isAdmin, async (ctx) => {
+        const username = ctx.message.text.split(' ')[1];
+        if (!username) return ctx.reply(`الاستخدام: /add${plan.commandBase} <اسم_المستخدم>`);
+        
+        userStates[ctx.from.id] = { 
+            step: `confirm_add_${plan.type}`, 
+            targetUsername: username,
+            planType: plan.type,
+            planName: plan.name,
+            action: 'add'
+        };
+        ctx.replyWithHTML(`هل أنت متأكد أنك تريد إضافة <b>${plan.name}</b> للمستخدم <code>${username}</code>؟\nالمدة: ${plan.durationMonths} شهر/أشهر.`, 
+            Markup.inlineKeyboard([
+                Markup.button.callback('✅ موافق', `confirm_plan_change`),
+                Markup.button.callback('❌ إلغاء', 'cancel_plan_change')
+            ])
+        );
+    });
+
+    // Delete plan command
+    bot.command(`del${plan.commandBase}`, isAdmin, async (ctx) => {
+        const username = ctx.message.text.split(' ')[1];
+        if (!username) return ctx.reply(`الاستخدام: /del${plan.commandBase} <اسم_المستخدم>`);
+
+        userStates[ctx.from.id] = { 
+            step: `confirm_del_${plan.type}`, 
+            targetUsername: username,
+            planType: plan.type, // For identifying which plan *was* active, though we'll revert to free
+            planName: plan.name,
+            action: 'delete'
+        };
+        ctx.replyWithHTML(`هل أنت متأكد أنك تريد حذف <b>${plan.name}</b> من المستخدم <code>${username}</code> وإعادته للخطة المجانية؟`, 
+            Markup.inlineKeyboard([
+                Markup.button.callback('✅ موافق', `confirm_plan_change`),
+                Markup.button.callback('❌ إلغاء', 'cancel_plan_change')
+            ])
+        );
+    });
+});
+
+bot.action('confirm_plan_change', isAdmin, async (ctx) => {
+    const adminId = ctx.from.id;
+    const state = userStates[adminId];
+
+    if (!state || !state.targetUsername || !state.planType || !state.action) {
+        await ctx.answerCbQuery('خطأ: الحالة غير معروفة. حاول مرة أخرى.');
+        delete userStates[adminId];
+        return ctx.editMessageText('فشلت العملية بسبب حالة غير معروفة.');
+    }
+
+    const { targetUsername, planType, action } = state;
+    await ctx.answerCbQuery(`جاري ${action === 'add' ? 'إضافة' : 'حذف'} الخطة...`);
+    await ctx.editMessageText(`جاري تنفيذ طلبك للمستخدم ${targetUsername}...`);
+
+    db.get("SELECT id, plan FROM users WHERE username = ?", [targetUsername], (err, user) => {
+        if (err) {
+            console.error(`[BOT Plan Change] DB error finding user ${targetUsername}:`, err);
+            return ctx.reply(`خطأ في قاعدة البيانات عند البحث عن المستخدم ${targetUsername}.`);
+        }
+        if (!user) return ctx.reply(`لم يتم العثور على المستخدم ${targetUsername}.`);
+
+        if (action === 'add') {
+            const planConfig = planCommands.find(p => p.type === planType);
+            if (!planConfig) return ctx.reply('خطأ: تفاصيل الخطة غير موجودة.');
+
+            const startDate = new Date();
+            const expiryDate = new Date(startDate);
+            expiryDate.setMonth(startDate.getMonth() + planConfig.durationMonths);
+
+            db.run("UPDATE users SET plan = ?, plan_start_date = ?, plan_expiry_date = ? WHERE id = ?", 
+                [planType, startDate.toISOString(), expiryDate.toISOString(), user.id], 
+                function(updateErr) {
+                    if (updateErr) {
+                        console.error(`[BOT Add Plan] DB error updating plan for ${targetUsername}:`, updateErr);
+                        return ctx.reply(`فشل تحديث خطة المستخدم ${targetUsername}.`);
+                    }
+                    ctx.reply(`✅ تم تحديث خطة المستخدم ${targetUsername} إلى ${planConfig.name} بنجاح. تنتهي في: ${expiryDate.toLocaleDateString('ar-EG')}`);
+                    delete userStates[adminId];
+                }
+            );
+        } else if (action === 'delete') {
+            // Revert to free plan
+            db.run("UPDATE users SET plan = 'free', plan_start_date = NULL, plan_expiry_date = NULL WHERE id = ?", 
+                [user.id], 
+                function(updateErr) {
+                    if (updateErr) {
+                        console.error(`[BOT Del Plan] DB error reverting plan for ${targetUsername}:`, updateErr);
+                        return ctx.reply(`فشل حذف الخطة للمستخدم ${targetUsername}.`);
+                    }
+                    ctx.reply(`🗑️ تم حذف الخطة من المستخدم ${targetUsername} وإعادته للخطة المجانية.`);
+                    delete userStates[adminId];
+                }
+            );
+        }
+    });
+});
+
+bot.action('cancel_plan_change', async (ctx) => {
+    delete userStates[ctx.from.id];
+    await ctx.answerCbQuery('تم الإلغاء.');
+    await ctx.editMessageText('تم إلغاء تغيير الخطة.');
+});
+
+
+// --- Video Upload Flow (Mostly unchanged, ensure compatibility with new plan types for videos) ---
+bot.on('video', async (ctx) => { 
+    const userId = ctx.from.id; 
+    // Allow admins or specific contributors to upload. For now, only admin for simplicity.
+    if (userId !== YOUR_ADMIN_TELEGRAM_ID && !(userStates[userId] && userStates[userId].canUpload)) { // Add a canUpload flag if you have other contributors
+        return ctx.reply('ليس لديك الصلاحية لرفع الفيديوهات حاليًا.');
+    }
+    if (userStates[userId] && userStates[userId].step !== 'awaiting_video_or_command') { 
+        return ctx.reply('أنت حاليًا في منتصف عملية رفع أخرى. أرسل /cancel ثم أرسل الفيديو.'); 
+    } 
+    const fileId = ctx.message.video.file_id; 
+    const fileSize = ctx.message.video.file_size; 
+    const fileNameOriginal = ctx.message.video.file_name || `video_${Date.now()}.mp4`; 
+    const fileExtension = path.extname(fileNameOriginal) || '.mp4'; 
+    if (fileSize > 2000 * 1024 * 1024) { return ctx.reply('حجم الفيديو كبير جداً. الحد الأقصى هو 2 جيجابايت.'); } 
+    try { 
+        await ctx.replyWithChatAction('typing'); 
+        const fileLink = await ctx.telegram.getFileLink(fileId); 
+        userStates[userId] = { 
+            step: 'awaiting_title_ar', 
+            videoInfo: { telegramFileLink: fileLink.href, originalName: fileNameOriginal, extension: fileExtension } 
+        }; 
+        ctx.reply('تم استلام الفيديو 👍. الآن، عنوان الفيديو (باللغة العربية).'); 
+    } catch (error) { 
+        console.error('[BOT] خطأ في الحصول على رابط الملف:', error); 
+        ctx.reply('حدث خطأ أثناء معالجة الفيديو.'); 
+        delete userStates[userId]; 
+        userStates[userId] = { step: 'awaiting_video_or_command' };
+    }
+});
+
+bot.on('photo', async (ctx) => { 
+    const userId = ctx.from.id; 
+    if (!userStates[userId] || userStates[userId].step !== 'awaiting_thumbnail') { 
+        return ctx.reply('الرجاء اتباع التعليمات. أرسل /cancel للبدء من جديد.'); 
+    } 
+    const photo = ctx.message.photo.pop(); // Get the largest photo
+    const fileId = photo.file_id; 
+    try { 
+        await ctx.replyWithChatAction('upload_photo'); 
+        const fileLink = await ctx.telegram.getFileLink(fileId); 
+        const thumbnailFileNameOnServer = `${Date.now()}_${userId}_thumb.jpg`; 
+        const thumbnailRelativePath = `/videos_data/thumbnails/${thumbnailFileNameOnServer}`; 
+        const response = await axios({ url: fileLink.href, responseType: 'stream' }); 
+        const writer = fs.createWriteStream(path.join(__dirname, thumbnailRelativePath)); 
+        response.data.pipe(writer); 
+        await new Promise((resolve, reject) => { writer.on('finish', resolve); writer.on('error', reject); }); 
+        userStates[userId].videoInfo.thumbnail_relative_path = thumbnailRelativePath; 
+        userStates[userId].step = 'awaiting_video_access_type'; // New step for video type
+        ctx.reply('تم حفظ الغلاف ✅. الآن، حدد نوع الوصول للفيديو (الخطة المطلوبة لمشاهدته):', 
+            Markup.inlineKeyboard([
+                [Markup.button.callback('مجاني 🆓', 'set_video_type_free')],
+                [Markup.button.callback('قياسي 💎 (Standard)', 'set_video_type_standard')],
+                [Markup.button.callback('برو 🌟 (Pro)', 'set_video_type_pro')],
+                [Markup.button.callback('فائق 🚀 (Ultimate/Annual)', 'set_video_type_ultimate')] // Ultimate and Annual can share same video type
+            ])
+        ); 
+    } catch (error) { 
+        console.error('[BOT] خطأ في معالجة الغلاف:', error); 
+        ctx.reply('حدث خطأ أثناء معالجة الغلاف.'); 
+    }
+});
+
+bot.action(/set_video_type_(free|standard|pro|ultimate)/, async (ctx) => {
+    const userId = ctx.from.id;
+    if (!userStates[userId] || userStates[userId].step !== 'awaiting_video_access_type') {
+        return ctx.answerCbQuery('خطوة غير متوقعة.');
+    }
+    const videoType = ctx.match[1]; // 'free', 'standard', 'pro', 'ultimate'
+    userStates[userId].videoInfo.video_access_type = videoType; // This is the 'type' column in 'videos' table
+
+    const typeNameMap = { free: 'مجاني', standard: 'قياسي', pro: 'برو', ultimate: 'فائق/سنوي' };
+
+    try {
+        await ctx.editMessageReplyMarkup(undefined);
+        await ctx.reply(`تم تحديد نوع الوصول للفيديو: ${typeNameMap[videoType]}.`);
+        await ctx.reply('جاري تحميل الفيديو إلى الخادم... ⏳');
+        await ctx.replyWithChatAction('upload_video');
+
+        const videoInfo = userStates[userId].videoInfo;
+        const videoFileNameOnServer = `${Date.now()}_${userId}_video${videoInfo.extension}`;
+        const videoRelativePath = `/videos_data/files/${videoFileNameOnServer}`;
+        const videoResponse = await axios({ url: videoInfo.telegramFileLink, responseType: 'stream' });
+        const videoWriter = fs.createWriteStream(path.join(__dirname, videoRelativePath));
+        videoResponse.data.pipe(videoWriter);
+        await new Promise((resolve, reject) => { videoWriter.on('finish', resolve); videoWriter.on('error', reject); });
+
+        const videoId = `vid_${Date.now()}${Math.random().toString(36).substring(2, 7)}`;
+        const sql = `INSERT INTO videos (id, title_ar, title_en, thumbnail_path, alt_text_ar, alt_text_en, description_ar, description_en, type, video_file_path) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        db.run(sql, [
+            videoId, 
+            videoInfo.title_ar, 
+            videoInfo.title_en || videoInfo.title_ar, 
+            videoInfo.thumbnail_relative_path, 
+            videoInfo.alt_text_ar || videoInfo.title_ar, 
+            videoInfo.alt_text_en || videoInfo.title_en || videoInfo.title_ar, 
+            videoInfo.description_ar, 
+            videoInfo.description_en || videoInfo.description_ar, 
+            videoInfo.video_access_type, // Use the selected access type
+            videoRelativePath
+        ], function(err) {
+            if (err) {
+                console.error('[BOT] خطأ في حفظ الفيديو:', err.message);
+                ctx.reply('حدث خطأ فادح أثناء حفظ بيانات الفيديو.');
+            } else {
+                const siteBaseUrl = process.env.SITE_URL || `http://localhost:${PORT}`; // Use env var for site URL
+                ctx.reply(`تم رفع الفيديو بنجاح! 🎉\nالمعرف: ${videoId}\nالعنوان: ${videoInfo.title_ar}\nنوع الوصول: ${typeNameMap[videoInfo.video_access_type]}\nالرابط: ${siteBaseUrl}/#videos-section`); // Link to videos section
+            }
+            delete userStates[userId];
+            userStates[userId] = { step: 'awaiting_video_or_command' };
+        });
+    } catch (error) {
+        console.error('[BOT] خطأ في تحميل الفيديو أو حفظ البيانات:', error);
+        ctx.reply('حدث خطأ أثناء تحميل الفيديو أو حفظ البيانات.');
+        if (userStates[userId]?.videoInfo?.thumbnail_relative_path) {
+            fs.unlink(path.join(__dirname, userStates[userId].videoInfo.thumbnail_relative_path)).catch(e => console.error("[BOT] Failed to delete temp thumbnail", e));
+        }
+        delete userStates[userId];
+        userStates[userId] = { step: 'awaiting_video_or_command' };
+    }
+});
+
+
+bot.on('text', (ctx) => { 
+    const userId = ctx.from.id; 
+    const text = ctx.message.text.trim(); 
+    if (!userStates[userId] || userStates[userId].step === 'awaiting_video_or_command') {
+        // If not in a specific step, and it's not a command handled above, ignore or reply with help for non-admins
+        if (userId !== YOUR_ADMIN_TELEGRAM_ID && !text.startsWith('/')) {
+            ctx.reply('الرجاء إرسال الفيديو أولاً أو استخدام أمر صالح. أرسل /start للمساعدة.');
+        }
+        return; 
+    }
+    if (text.toLowerCase() === '/cancel') { 
+        if (userStates[userId] && userStates[userId].step !== 'awaiting_video_or_command') { 
+            delete userStates[userId]; 
+            userStates[userId] = { step: 'awaiting_video_or_command' };
+            return ctx.reply('تم إلغاء العملية.'); 
+        }
+    }
+    const currentState = userStates[userId]; 
+    if (!currentState) return; 
+    switch (currentState.step) { 
+        case 'awaiting_title_ar': currentState.videoInfo.title_ar = text; currentState.step = 'awaiting_description_ar'; ctx.reply('تم حفظ العنوان العربي 👍. الآن، الوصف (باللغة العربية).'); break; 
+        case 'awaiting_description_ar': currentState.videoInfo.description_ar = text; currentState.step = 'awaiting_title_en'; ctx.reply('تم حفظ الوصف العربي 👍. الآن، العنوان (باللغة الإنجليزية).', Markup.inlineKeyboard([Markup.button.callback('نفس العنوان العربي', 'use_same_title_ar_for_en')])); break; 
+        case 'awaiting_title_en': currentState.videoInfo.title_en = text; currentState.step = 'awaiting_description_en'; ctx.reply('تم حفظ العنوان الإنجليزي 👍. الآن، الوصف (باللغة الإنجليزية).', Markup.inlineKeyboard([Markup.button.callback('نفس الوصف العربي', 'use_same_desc_ar_for_en')])); break; 
+        case 'awaiting_description_en': currentState.videoInfo.description_en = text; currentState.step = 'awaiting_thumbnail'; ctx.reply('تم حفظ الوصف الإنجليزي 👍. الآن، صورة الغلاف للفيديو.'); break; 
+        // default: ctx.reply('أنا في انتظار خطوة معينة. أرسل /cancel للبدء من جديد.'); // This might be too noisy
+    }
+});
+
+bot.action('use_same_title_ar_for_en', async (ctx) => { 
+    const userId = ctx.from.id; 
+    if (!userStates[userId] || userStates[userId].step !== 'awaiting_title_en') return ctx.answerCbQuery('خطوة غير متوقعة.'); 
+    userStates[userId].videoInfo.title_en = userStates[userId].videoInfo.title_ar; 
+    userStates[userId].step = 'awaiting_description_en'; 
+    await ctx.editMessageReplyMarkup(undefined); 
+    await ctx.reply('تم استخدام العنوان العربي للإنجليزي 👍. الآن، الوصف (باللغة الإنجليزية).', Markup.inlineKeyboard([Markup.button.callback('نفس الوصف العربي', 'use_same_desc_ar_for_en')])); 
+});
+
+bot.action('use_same_desc_ar_for_en', async (ctx) => { 
+    const userId = ctx.from.id; 
+    if (!userStates[userId] || userStates[userId].step !== 'awaiting_description_en') return ctx.answerCbQuery('خطوة غير متوقعة.'); 
+    userStates[userId].videoInfo.description_en = userStates[userId].videoInfo.description_ar; 
+    userStates[userId].step = 'awaiting_thumbnail'; 
+    await ctx.editMessageReplyMarkup(undefined); 
+    await ctx.reply('تم استخدام الوصف العربي للإنجليزي 👍. الآن، صورة الغلاف للفيديو.'); 
+});
+
+bot.launch().then(() => console.log('Telegram Bot is running!')).catch(err => console.error('Error starting Telegram Bot:', err));
+
+// Fallback for SPA routing - must be last route
+app.use((req, res, next) => { 
+    if (path.extname(req.url) !== '' || req.url.startsWith('/api/')) return next(); 
+    res.sendFile(path.join(__dirname, 'web.html'), (err) => { if (err) next(err); }); 
+});
+
+app.use((req, res, next) => { 
+    if (!res.headersSent) res.status(404).send("Sorry, can't find that page!"); 
+});
+
+app.use((err, req, res, next) => { 
+    console.error("[Global Error Handler]", err.stack || err); 
+    if (!res.headersSent) res.status(500).send('Something broke on the server!'); 
+});
+
+app.listen(PORT, () => { 
+    console.log(`SofagHub server running at http://localhost:${PORT}/`); 
+    if (YOUR_ADMIN_TELEGRAM_ID === 0) {
+        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+        console.warn("!!! تنبيه هام: لم يتم تعيين YOUR_ADMIN_TELEGRAM_ID في ملف server.js           !!!");
+        console.warn("!!! لن تتمكن من استخدام الأوامر الإدارية للبوت حتى تقوم بتعيين هذا المتغير.   !!!");
+        console.warn("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+    }
+    console.log('Press Ctrl+C to exit.'); 
+});
+
+app.on('error', (err) => { 
+    if (err.code === 'EADDRINUSE') console.error(`Error: Port ${PORT} is already in use.`); 
+    else console.error(`Server error: ${err}`); 
+    process.exit(1); 
+});
+
+console.log('Server.js: End of file reached. Event loop started.');
+
+
+
+===== style.css =====
+/* --- Global Variables --- */
+:root {
+    --primary-color: #FFA500; 
+    --primary-color-darker: #E69500;
+    --primary-color-rgb: 255, 165, 0; 
+    --secondary-color: #555555;
+    --background-color: #F4F6F8; 
+    --card-background: #FFFFFF;
+    --text-color: #2C3E50; 
+    --header-background: #FFFFFF;
+    --nav-background: #F8F9FA;
+    --nav-link-color: #4A4A4A;
+    --nav-link-hover-color: var(--primary-color);
+    --footer-background: #1f1f1f;
+    --footer-text-color: #BBBBBB;
+    --success-color: #28a745; 
+    --error-color: #dc3545;
+    --danger-color: #e74c3c;
+    --premium-tag-bg: #6f42c1; 
+    --premium-tag-text: #FFFFFF;
+    --free-tag-bg: var(--success-color);
+    --free-tag-text: #FFFFFF;
+    --font-family: 'Cairo', 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --border-radius: 10px; 
+    --box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
+    --box-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.1);
+    --transition-speed: 0.3s;
+    --input-background: #FFFFFF;
+    --input-border-color: #DDE2E7;
+    --input-focus-border: var(--primary-color);
+    --header-total-height: 125px;
+}
+
+.dark-theme {
+    --primary-color: #FFB74D;
+    --primary-color-darker: #FFA726;
+    --primary-color-rgb: 255, 183, 77;
+    --secondary-color: #A0A0A0;
+    --background-color: #18191A; 
+    --card-background: #242526; 
+    --text-color: #E4E6EB;
+    --header-background: #242526;
+    --nav-background: #1f1f1f;
+    --nav-link-color: #D1D1D1;
+    --footer-background: #1C1C1C;
+    --footer-text-color: #909090;
+    --input-background: #3A3B3C;
+    --input-border-color: #4D4F52;
+    --premium-tag-bg: #8a63d2; 
+    --free-tag-bg: #38c172; 
+    --error-color: #f87171;
+    --danger-color: #ec7063;
+}
+
+/* --- Reset & Base Styles --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: var(--font-family); background-color: var(--background-color);
+    color: var(--text-color); line-height: 1.7;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease;
+    padding-top: var(--header-total-height); 
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, h5, h6 { margin-bottom: 0.9rem; font-weight: 700; line-height: 1.3; }
+a { text-decoration: none; color: var(--primary-color); transition: color var(--transition-speed) ease; }
+a:hover { color: var(--primary-color-darker); }
+img { max-width: 100%; height: auto; display: block; }
+button, input[type="submit"], .btn-primary, .btn-secondary, .btn-primary-outline, .btn-danger, .select-plan-btn {
+    background-color: var(--primary-color); color: white; border: 2px solid var(--primary-color);
+    padding: 10px 22px; border-radius: var(--border-radius); cursor: pointer;
+    font-family: var(--font-family); font-size: 0.95rem; font-weight: 600;
+    transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, transform 0.2s ease, border-color var(--transition-speed) ease, box-shadow 0.2s ease;
+    text-align: center; box-shadow: 0 2px 4px rgba(var(--primary-color-rgb), 0.2);
+    text-decoration: none;
+    display: inline-block;
+    white-space: nowrap;
+}
+button:hover, input[type="submit"]:hover, .btn-primary:hover, .btn-secondary:hover, .btn-primary-outline:hover, .btn-danger:hover, .select-plan-btn:hover {
+    transform: translateY(-2px); box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3);
+    color: white;
+}
+.btn-primary:hover { background-color: var(--primary-color-darker); border-color: var(--primary-color-darker); }
+button:active, input[type="submit"]:active, .btn-primary:active, .btn-secondary:active, .btn-primary-outline:active, .btn-danger:active, .select-plan-btn:active {
+    transform: translateY(0px); box-shadow: 0 2px 4px rgba(var(--primary-color-rgb), 0.2);
+}
+.btn-secondary { background-color: var(--secondary-color); border-color: var(--secondary-color); color: white; box-shadow: 0 2px 4px rgba(0,0,0, 0.1); }
+.btn-secondary:hover { background-color: color-mix(in srgb, var(--secondary-color) 85%, black); border-color: color-mix(in srgb, var(--secondary-color) 85%, black); box-shadow: 0 4px 8px rgba(0,0,0, 0.15); }
+.btn-primary-outline { background-color: transparent; border: 2px solid var(--primary-color); color: var(--primary-color); box-shadow: none; }
+.btn-primary-outline:hover { background-color: var(--primary-color); color: white; box-shadow: 0 4px 8px rgba(var(--primary-color-rgb), 0.3); }
+.btn-danger { background-color: var(--danger-color); border-color: var(--danger-color); }
+.btn-danger:hover { background-color: color-mix(in srgb, var(--danger-color) 85%, black); border-color: color-mix(in srgb, var(--danger-color) 85%, black); }
+.container { width: 90%; max-width: 1320px; margin: 0 auto; padding: 20px 0; }
+
+/* --- Header & Navigation --- */
+header {
+    background-color: var(--header-background);
+    position: fixed; top: 0; left: 0; right: 0;
+    width: 100%; z-index: 1000;
+    box-shadow: 0 3px 15px rgba(0,0,0,0.05); 
+    transition: background-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease;
+}
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.logo { cursor: pointer; flex-shrink: 0; text-decoration: none; }
+.logo h1 {
+    font-size: 2.1em; margin: 0; font-weight: 800; color: var(--primary-color);
+    display: flex; align-items: center; letter-spacing: -1px; user-select: none;
+    font-family: 'Poppins', var(--font-family);
+    direction: ltr !important; 
+    text-align: left !important; 
+}
+.logo .logo-g { color: var(--text-color); margin: 0 -2px; font-weight: 700; }
+.dark-theme .logo .logo-g { color: var(--text-color); }
+.logo .logo-hub-icon {
+    background-color: var(--text-color); color: var(--primary-color); padding: 6px 9px; 
+    border-radius: var(--border-radius); margin: 0 6px; line-height: 0; 
+    display: inline-flex; align-items: center; justify-content: center;
+    animation: pulseIcon 2.5s infinite ease-in-out;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+.logo .logo-hub-icon svg { width: 18px; height: 18px; }
+.dark-theme .logo .logo-hub-icon { background-color: var(--primary-color); color: #111; }
+@keyframes pulseIcon { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+
+.search-container { flex-grow: 1; display: flex; justify-content: center; margin: 0 20px; }
+.search-input-group { 
+    display: flex; align-items: center; background-color: var(--input-background);
+    border-radius: var(--border-radius); border: 1px solid var(--input-border-color);
+    overflow: hidden; transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    max-width: 450px; width: 100%; 
+}
+.search-input-group:focus-within { border-color: var(--input-focus-border); box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus-border) 20%, transparent); }
+.search-input-group input[type="search"] {
+    padding: 10px 15px; border: none; background-color: transparent;
+    font-family: var(--font-family); color: var(--text-color);
+    flex-grow: 1; min-width: 100px; font-size: 0.95rem;
+}
+.search-input-group input[type="search"]:focus { outline: none; }
+.search-input-group input[type="search"]::placeholder { color: var(--secondary-color); opacity: 0.8; }
+.search-input-group button {
+    padding: 10px 12px; border-radius: 0; background-color: transparent;
+    color: var(--primary-color); border: none; display: flex; align-items: center;
+    box-shadow: none; flex-shrink: 0; 
+}
+html[dir="ltr"] .search-input-group button { border-left: 1px solid var(--input-border-color); }
+html[dir="rtl"] .search-input-group button { border-right: 1px solid var(--input-border-color); }
+.search-input-group button:hover { background-color: color-mix(in srgb, var(--primary-color) 10%, transparent); transform: none; box-shadow: none; }
+.search-input-group button svg { display: block; margin: 0 5px; }
+.search-input-group .search-button-text { font-size: 0.9rem; font-weight: 500; }
+
+.header-account-actions { flex-shrink: 0; }
+
+#mainNav {
+    width: 100%;
+    background-color: var(--nav-background);
+    border-top: 1px solid var(--input-border-color);
+    border-bottom: 1px solid var(--input-border-color);
+}
+.dark-theme #mainNav { background-color: var(--nav-background); border-color: var(--input-border-color); }
+.nav-container { padding: 0 20px; }
+#navLinks {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0; padding: 0;
+    height: 50px;
+}
+#navLinks li { margin: 0 5px; }
+#navLinks li a.nav-link {
+    color: var(--nav-link-color);
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: var(--border-radius);
+    position: relative;
+    font-size: 1rem;
+    text-transform: capitalize;
+    transition: background-color 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+}
+#navLinks li a.nav-link:hover, 
+#navLinks li a.nav-link.active {
+    background-color: color-mix(in srgb, var(--primary-color) 10%, transparent);
+    color: var(--primary-color);
+}
+
+/* --- Main Content Sections --- */
+main { min-height: calc(100vh - var(--header-total-height) - 60px); } /* 60px for footer */
+.content-section { padding: 40px 0; display: none; animation: fadeIn 0.5s ease-out; }
+.content-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+.section-title { text-align: center; margin-bottom: 30px; font-size: 2.5rem; color: var(--text-color); position: relative; font-weight: 800; }
+.section-title.main-title { font-size: 2.8rem; margin-bottom: 40px; color: var(--primary-color); }
+.section-title::after { content: ''; display: block; width: 70px; height: 4px; background-color: var(--primary-color); margin: 12px auto 0; border-radius: 2px; }
+.main-title::after { display: none; }
+.sub-section-title { text-align: center; font-size: 1.8rem; color: var(--text-color); margin-bottom: 30px; font-weight: 700; }
+.sub-section-title::after { content: ''; display: block; width: 50px; height: 3px; background-color: var(--secondary-color); opacity: 0.5; margin: 8px auto 0; border-radius: 2px; }
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 30px; }
+.video-grid.suggested-videos { display: flex; flex-wrap: wrap; justify-content: center; }
+.video-grid.suggested-videos .video-card { flex: 0 1 300px; margin: 15px; }
+.video-card { background-color: var(--card-background); border-radius: var(--border-radius); box-shadow: var(--box-shadow); overflow: hidden; transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease; display: flex; flex-direction: column; border: 1px solid var(--input-border-color); }
+.dark-theme .video-card { border-color: #3A3B3C; }
+.video-card:hover { transform: translateY(-8px); box-shadow: var(--box-shadow-hover); }
+.video-thumbnail { width: 100%; padding-top: 56.25%; position: relative; overflow: hidden; background-color: #e0e0e0; }
+.video-thumbnail img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.4s ease; }
+.video-card:hover .video-thumbnail img { transform: scale(1.07); }
+.video-thumbnail .play-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity var(--transition-speed) ease; }
+.video-card:hover .video-thumbnail .play-overlay { opacity: 1; }
+.video-thumbnail .play-overlay svg { width: 64px; height: 64px; color: rgba(255,255,255,0.95); filter: drop-shadow(0 0 5px rgba(0,0,0,0.5)); }
+.video-type-tag { position: absolute; top: 12px; padding: 5px 10px; font-size: 0.7rem; font-weight: bold; border-radius: 5px; z-index: 1; text-transform: uppercase; letter-spacing: 0.5px; line-height: 1; }
+.video-type-tag.free-tag-overlay { background-color: var(--free-tag-bg); color: var(--free-tag-text); }
+.video-type-tag.paid-tag-overlay { background-color: var(--premium-tag-bg); color: var(--premium-tag-text); }
+html[dir="ltr"] .video-type-tag { left: 12px; } html[dir="rtl"] .video-type-tag { right: 12px; }
+.video-info { padding: 20px; flex-grow: 1; display: flex; flex-direction: column; }
+.video-title { font-size: 1.3rem; margin-bottom: 12px; color: var(--text-color); font-weight: 700; line-height: 1.4; }
+.video-meta { font-size: 0.9rem; color: var(--secondary-color); margin-bottom: 15px; display: flex; align-items: center; flex-wrap: wrap; }
+.video-meta > span:not(:last-child) { margin-left: 15px; } /* LTR */
+html[dir="rtl"] .video-meta > span:not(:last-child) { margin-left: 0; margin-right: 15px; }
+.video-description { font-size: 0.95rem; margin-bottom: 20px; flex-grow: 1; color: var(--secondary-color); line-height: 1.6; }
+.video-card .watch-now-btn, .video-card .premium-access-btn { width: 100%; margin-top: auto; padding: 12px; font-weight: 600; }
+.video-card .premium-access-btn { background-color: var(--premium-tag-bg); border-color: var(--premium-tag-bg); color: var(--premium-tag-text); }
+.video-card .premium-access-btn:hover { background-color: color-mix(in srgb, var(--premium-tag-bg) 85%, black); border-color: color-mix(in srgb, var(--premium-tag-bg) 85%, black); }
+.video-card .watch-now-btn { background-color: var(--free-tag-bg); border-color: var(--free-tag-bg); color: var(--free-tag-text); }
+.video-card .watch-now-btn:hover { background-color: color-mix(in srgb, var(--free-tag-bg) 85%, black); border-color: color-mix(in srgb, var(--free-tag-bg) 85%, black); }
+
+/* Subscription Plans Styling */
+.subscription-plans { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; justify-content: center; margin-top: 40px; }
+.plan-card { background-color: var(--card-background); border-radius: var(--border-radius); box-shadow: var(--box-shadow); padding: 30px 25px; transition: transform var(--transition-speed) ease, box-shadow var(--transition-speed) ease; border: 1px solid var(--input-border-color); display: flex; flex-direction: column; }
+html[dir="ltr"] .plan-card { text-align: left; } html[dir="rtl"] .plan-card { text-align: right; }
+.dark-theme .plan-card { border-color: #3A3B3C; }
+.plan-card:hover { transform: translateY(-10px) scale(1.03); box-shadow: var(--box-shadow-hover); }
+.plan-card.basic-plan { border-top: 5px solid var(--secondary-color); }
+.plan-card.standard-plan { border-top: 5px solid #3498db; }
+.plan-card.pro-plan { border-top: 5px solid var(--primary-color); }
+.plan-card.ultimate-plan { border-top: 5px solid #e74c3c; }
+.plan-card.annual-plan { border-top: 5px solid #9b59b6; }
+.plan-card.recommended { position: relative; border: 2px solid var(--primary-color); transform: scale(1.02); }
+.dark-theme .plan-card.recommended { border-color: var(--primary-color); }
+.plan-card.recommended:hover { transform: translateY(-10px) scale(1.05); }
+.plan-badge { position: absolute; top: -18px; background-color: var(--primary-color); color: white; padding: 6px 18px; font-size: 0.85rem; font-weight: bold; border-radius: 20px; box-shadow: 0 3px 8px rgba(var(--primary-color-rgb),0.3); }
+html[dir="ltr"] .plan-badge { left: 50%; transform: translateX(-50%); } html[dir="rtl"] .plan-badge { right: 50%; transform: translateX(50%); }
+.plan-header h3 { font-size: 1.6rem; color: var(--text-color); margin-bottom: 10px; font-weight: 700; }
+.plan-card.standard-plan .plan-header h3 { color: #3498db; }
+.plan-card.pro-plan .plan-header h3 { color: var(--primary-color); }
+.plan-card.ultimate-plan .plan-header h3 { color: #e74c3c; }
+.plan-card.annual-plan .plan-header h3 { color: #9b59b6; }
+.plan-price { font-size: 2.5rem; font-weight: 800; margin-bottom: 20px; color: var(--text-color); } 
+.plan-price span { font-size: 0.9rem; font-weight: 500; color: var(--secondary-color); }
+.plan-features { list-style: none; padding: 0; margin-bottom: 30px; flex-grow: 1; } 
+.plan-features li { margin-bottom: 12px; font-size: 0.95rem; display: flex; align-items: center; }
+.plan-features li .feature-icon { font-size: 1.1rem; width: 22px; font-weight: bold; }
+html[dir="ltr"] .plan-features li .feature-icon { margin-right: 10px; } html[dir="rtl"] .plan-features li .feature-icon { margin-left: 10px; }
+.plan-features li .feature-icon[data-icon="check"], .plan-features li span:first-child:not([data-translate]) { color: var(--success-color); }
+.plan-features li .feature-icon[data-icon="cross"], .plan-features li span:first-child:not([data-translate])[innerHTML="✗"] { color: #e74c3c; }
+.plan-card .select-plan-btn { width: 100%; margin-top: auto; padding: 13px; font-size: 1rem; }
+
+/* Auth Forms & Settings */
+.auth-form-container .form-container, .settings-form { max-width: 500px; margin: 0 auto 25px auto; background-color: var(--card-background); padding: 35px; border-radius: var(--border-radius); box-shadow: var(--box-shadow); border: 1px solid var(--input-border-color); }
+.dark-theme .auth-form-container .form-container, .dark-theme .settings-form { border-color: #3A3B3C; }
+.login-form-title, .register-form-title { display: none; }
+.form-group { margin-bottom: 22px; } .form-group label, .theme-label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text-color); font-size: 1rem; }
+.form-group input[type="text"], .form-group input[type="email"], .form-group input[type="password"], .form-group select, .form-control { width: 100%; padding: 12px 16px; border: 1px solid var(--input-border-color); border-radius: var(--border-radius); font-family: var(--font-family); font-size: 0.95rem; background-color: var(--input-background); color: var(--text-color); transition: border-color var(--transition-speed) ease, box-shadow var(--transition-speed) ease; }
+.form-group input:focus, .form-group select:focus, .form-control:focus { outline: none; border-color: var(--input-focus-border); box-shadow: 0 0 0 3px color-mix(in srgb, var(--input-focus-border) 20%, transparent); }
+.form-group input::placeholder { color: var(--secondary-color); opacity: 0.7; }
+.theme-switcher-group { display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px; padding: 12px; background-color: color-mix(in srgb, var(--background-color) 50%, var(--card-background) 50%); border-radius: var(--border-radius); }
+.theme-label { margin-bottom: 0; }
+.theme-toggle-btn { position: relative; width: 65px; height: 34px; border-radius: 17px; background-color: var(--secondary-color); cursor: pointer; display: flex; align-items: center; padding: 4px; transition: background-color 0.3s ease; border: none; box-shadow: inset 0 1px 3px rgba(0,0,0,0.2); }
+.theme-toggle-btn .icon-sun, .theme-toggle-btn .icon-moon { font-size: 18px; position: absolute; top: 50%; transform: translateY(-50%); transition: opacity 0.3s ease, transform 0.3s ease; color: #fff; }
+.theme-toggle-btn .toggle-slider { width: 26px; height: 26px; background-color: white; border-radius: 50%; position: absolute; top: 4px; transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+html[dir="ltr"] .theme-toggle-btn .icon-sun { right: 8px; opacity: 1; } html[dir="ltr"] .theme-toggle-btn .icon-moon { left: 8px; opacity: 0; } html[dir="ltr"] .theme-toggle-btn .toggle-slider { right: 4px; }  html[dir="ltr"] .theme-toggle-btn[data-theme="dark"] .icon-sun { opacity: 0; } html[dir="ltr"] .theme-toggle-btn[data-theme="dark"] .icon-moon { opacity: 1; } html[dir="ltr"] .theme-toggle-btn[data-theme="dark"] .toggle-slider { transform: translateX(-31px); } 
+html[dir="rtl"] .theme-toggle-btn .icon-sun { left: 8px; opacity: 1; } html[dir="rtl"] .theme-toggle-btn .icon-moon { right: 8px; opacity: 0; } html[dir="rtl"] .theme-toggle-btn .toggle-slider { left: 4px; }  html[dir="rtl"] .theme-toggle-btn[data-theme="dark"] .icon-sun { opacity: 0; } html[dir="rtl"] .theme-toggle-btn[data-theme="dark"] .icon-moon { opacity: 1; } html[dir="rtl"] .theme-toggle-btn[data-theme="dark"] .toggle-slider { transform: translateX(31px); }
+.theme-toggle-btn[data-theme="dark"] { background-color: var(--primary-color); }
+.btn-block { display: block; width: 100%; padding: 13px; font-size: 1.05rem;} .form-switch-text { font-size: 0.9rem; color: var(--secondary-color); } .auth-link { font-weight: 600; }
+.password-warning { background-color: color-mix(in srgb, var(--primary-color) 15%, transparent); color: color-mix(in srgb, var(--primary-color) 90%, black); padding: 12px; border-radius: var(--border-radius); margin-bottom: 18px; font-size: 0.85rem; border: 1px solid color-mix(in srgb, var(--primary-color) 30%, transparent); }
+.dark-theme .password-warning { background-color: color-mix(in srgb, var(--primary-color) 20%, #000000 80%); color: var(--primary-color); border-color: color-mix(in srgb, var(--primary-color) 40%, transparent); }
+
+/* Footer */
+footer { background-color: var(--footer-background); color: var(--footer-text-color); text-align: center; padding: 20px 0; margin-top: 50px; transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease; }
+footer p { margin: 0; font-size: 0.85rem; letter-spacing: 0.3px; }
+
+/* Modals */
+.modal, .video-player-modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; align-items: center; justify-content: center; }
+.modal { background-color: rgba(20,20,20,0.7); animation: fadeInModalBg 0.3s ease-out; }
+.video-player-modal { background-color: rgba(0,0,0,0.85); z-index: 3000; }
+.modal:not([style*="display: flex;"]):not([style*="display: block;"]) { display: none !important; }
+@keyframes fadeInModalBg { from { background-color: rgba(20,20,20,0); } to { background-color: rgba(20,20,20,0.7); } }
+.modal-content, .video-player-modal-content { position: relative; border-radius: var(--border-radius); box-shadow: 0 12px 35px rgba(0,0,0,0.25); }
+.modal-content { background-color: var(--card-background); padding: 30px 40px; width: 90%; max-width: 550px; text-align: center; animation: slideInModal 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.video-player-modal-content { background-color: #111; padding: 0; border: none; width: 90%; max-width: 960px; overflow: hidden; }
+@keyframes slideInModal { from { transform: translateY(-30px) scale(0.98); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+.close-modal-btn { color: var(--secondary-color); position: absolute; top: 15px; font-size: 28px; font-weight: bold; transition: color 0.2s ease, transform 0.2s ease; }
+html[dir="ltr"] .close-modal-btn { right: 20px; } html[dir="rtl"] .close-modal-btn { left: 20px; }
+.close-modal-btn:hover, .close-modal-btn:focus { color: var(--text-color); text-decoration: none; cursor: pointer; transform: scale(1.1); }
+.video-player-modal-content video { display: block; width: 100%; max-height: 85vh; border-radius: var(--border-radius); outline: none; }
+.close-video-player-btn { position: absolute; top: -35px; right: 0px; color: #fff; font-size: 35px; font-weight: bold; transition: color 0.2s ease, transform 0.2s ease; background: rgba(0,0,0,0.3); border-radius: 50%; width: 30px; height: 30px; line-height: 28px; text-align: center; cursor: pointer; z-index: 3001; }
+.close-video-player-btn:hover, .close-video-player-btn:focus { color: #ccc; transform: scale(1.1); }
+#videoPlayerTitle { color: white; text-align: center; padding: 10px; font-size: 1.1rem; background-color: rgba(0,0,0,0.5); position: absolute; bottom: 0; width: 100%; z-index: 1; opacity: 0; transition: opacity 0.3s ease-in-out; }
+.video-player-modal-content:hover #videoPlayerTitle { opacity: 1; }
+.modal-icon { margin-bottom: 18px; line-height: 0; } .modal-icon svg { width: 48px; height: 48px; color: var(--primary-color); }
+.modal-content h2 { color: var(--primary-color); margin-bottom: 15px; font-size: 1.8rem; font-weight: 700; } .modal-content p { margin-bottom: 22px; font-size: 1rem; line-height: 1.6; color: var(--secondary-color); }
+.modal-features { list-style: none; padding: 0; margin: 25px 0; display: inline-block; }
+html[dir="ltr"] .modal-features { text-align: left; } html[dir="rtl"] .modal-features { text-align: right; }
+.modal-features li { margin-bottom: 10px; font-size: 0.95rem; display: flex; align-items: center; color: var(--text-color); }
+.modal-features li .feature-icon { color: var(--success-color); font-size: 1.1rem; }
+html[dir="ltr"] .modal-features li .feature-icon { margin-right: 10px; } html[dir="rtl"] .modal-features li .feature-icon { margin-left: 10px; }
+.modal-action-btn { padding: 12px 30px; font-size: 1.1rem; margin-top: 12px; width: auto; }
+.modal-link { display: block; margin-top: 18px; font-size: 0.9rem; color: var(--secondary-color); font-weight: 500; } .modal-link:hover { color: var(--primary-color); text-decoration: underline; }
+.text-center { text-align: center; } .mb-2 { margin-bottom: 1.5rem !important; } .mt-2 { margin-top: 1.5rem !important; }
+.no-results-message { text-align: center; font-size: 1.2rem; color: var(--secondary-color); padding: 22px; font-weight: 500; }
+
+/* Messages */
+.global-message, .auth-message, .message { padding: 12px; margin-bottom: 18px; border-radius: var(--border-radius); font-weight: 500; text-align: center; border: 1px solid transparent; font-size: 0.95rem; }
+.message.success, .global-message.success, .auth-message.success { background-color: color-mix(in srgb, var(--success-color) 15%, transparent); color: var(--success-color); border-color: var(--success-color); }
+.message.error, .global-message.error, .auth-message.error { background-color: color-mix(in srgb, var(--error-color) 15%, transparent); color: var(--error-color); border-color: var(--error-color); }
+.dark-theme .message.success, .dark-theme .global-message.success, .dark-theme .auth-message.success { background-color: color-mix(in srgb, var(--success-color) 25%, #000000 80%); }
+.dark-theme .message.error, .dark-theme .global-message.error, .dark-theme .auth-message.error { background-color: color-mix(in srgb, var(--error-color) 25%, #000000 80%); }
+
+/* --- Responsive Design --- */
+@media (max-width: 768px) {
+    :root { --header-total-height: 120px; }
+    .header-container {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    .logo { order: 1; }
+    .header-account-actions { order: 2; }
+    .search-container {
+        order: 3;
+        width: 100%;
+        margin: 10px 0 0 0;
+        max-width: 100%;
+    }
+    #mainNav .nav-container { padding: 0 10px; }
+    #navLinks {
+        justify-content: flex-start;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none; /* For Firefox */
+    }
+    #navLinks::-webkit-scrollbar { display: none; } /* For Chrome, Safari, and Opera */
+    .logo h1 { font-size: 1.8em; } 
+    .video-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 480px) {
+    :root { --header-total-height: 110px; }
+    .logo h1 { font-size: 1.6em; }
+    .header-account-actions a {
+        font-size: 0.85rem;
+        padding: 8px 14px;
+    }
+    .search-input-group input[type="search"] { font-size: 0.9rem; }
+    #navLinks li a.nav-link {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+    .section-title { font-size: 2rem; } 
+    .section-title.main-title { font-size: 2.2rem; } 
+    .subscription-plans { grid-template-columns: 1fr; }
+    .plan-card.recommended { transform: scale(1); }
+    .modal-content { width: 95%; padding: 25px 20px; }
+}
+
+
+===== web.html =====
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="site_title">SofagHub - سوفاج هاب</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="SofagHub: Your premium hub for exclusive Arabic Siko Siko videos. Browse, subscribe, and watch high-quality content. سوفاج هاب، موقعك الأول لمشاهدة فيديوهات سيكو سيكو العربية الحصرية.">
+    <meta name="keywords" content="SofagHub, Siko Siko, Arabic Videos, exclusive content, video streaming, سوفاج هاب, سيكو سيكو, فيديوهات عربي, محتوى حصري">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="/images/favicon.png" type="image/png">
+</head>
+<body>
+
+    <header>
+        <div class="container header-container">
+            <div class="logo" data-section-target="home-section">
+                <h1>Sofa<span class="logo-g">g</span><span class="logo-hub-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M10 8v8l6-4-6-4zm11-5H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H3V5h18v14z"/>
+                    </svg>
+                </span>Hub</h1>
+            </div>
+
+            <div class="search-container">
+                <div class="search-input-group">
+                    <input type="search" id="searchInput" data-translate-placeholder="search_placeholder" placeholder="ابحث عن فيديوهات..." aria-label="Search videos">
+                    <button id="searchButton" aria-label="Search">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search" viewBox="0 0 16 16"><path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/></svg>
+                        <span class="search-button-text" data-translate="search_button_text">بحث</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="header-account-actions">
+                <a href="#login-section" id="headerLoginBtn" data-section-target="login-section" class="btn-primary-outline" data-translate="nav_login" style="display: none;">تسجيل الدخول</a>
+                <a href="#manage-account-section" id="headerAccountBtn" data-section-target="manage-account-section" class="btn-primary" data-translate="manage_account_link" style="display: none;">إدارة الحساب</a>
+            </div>
+        </div>
+        <nav id="mainNav">
+            <div class="container nav-container">
+                <ul id="navLinks">
+                    <li><a href="#home-section" data-section-target="home-section" class="nav-link active" data-translate="nav_home">الرئيسية</a></li>
+                    <li><a href="#videos-section" data-section-target="videos-section" class="nav-link" data-translate="nav_videos">الفيديوهات</a></li>
+                    <li><a href="#subscription-section" data-section-target="subscription-section" class="nav-link" data-translate="nav_subscriptions">الاشتراكات</a></li>
+                    <li><a href="#settings-section" data-section-target="settings-section" class="nav-link" data-translate="nav_settings">الإعدادات</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div id="globalMessage" class="global-message" style="display:none;"></div>
+
+        <section id="home-section" class="content-section active">
+            <div class="container">
+                <h2 class="section-title main-title" data-translate="welcome_title">مرحباً بك في SofagHub!</h2>
+                <h3 class="sub-section-title" data-translate="suggested_for_you">مقترحة لك</h3>
+                <div class="video-grid suggested-videos" id="suggestedVideosContainer">
+                </div>
+            </div>
+        </section>
+
+        <section id="videos-section" class="content-section">
+            <div class="container">
+                <h2 class="section-title" data-translate="browse_videos_title">تصفح الفيديوهات</h2>
+                <div class="video-grid" id="videoGridContainer">
+                </div>
+            </div>
+        </section>
+
+        <section id="subscription-section" class="content-section">
+            <div class="container">
+                <h2 class="section-title" data-translate="subscription_plans_title">خطط الاشتراك</h2>
+                <div class="subscription-plans">
+                    <!-- Free Plan -->
+                    <div class="plan-card basic-plan">
+                        <div class="plan-header">
+                            <h3 data-translate="free_plan_title">الخطة المجانية</h3>
+                            <div class="plan-price" data-translate="free_plan_price">مجاني</div>
+                        </div>
+                        <ul class="plan-features">
+                            <li><span class="feature-icon">✓</span> <span data-translate="free_feature_1">فيديوهات مجانية محدودة</span></li>
+                            <li><span class="feature-icon">✗</span> <span data-translate="free_feature_2">جودة منخفضة (SD)</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="free_feature_3">مع إعلانات</span></li>
+                            <li><span class="feature-icon">✗</span> <span data-translate="free_feature_4">بدون تحميل</span></li>
+                        </ul>
+                        <a href="https://t.me/sofag255" target="_blank" class="btn-secondary select-plan-btn" data-translate="start_free_btn">ابدأ مجاناً</a>
+                    </div>
+
+                    <!-- Standard Plan -->
+                    <div class="plan-card standard-plan">
+                        <div class="plan-header">
+                            <h3 data-translate="standard_plan_title">الخطة القياسية</h3>
+                            <div class="plan-price">$5.99<span data-translate="standard_duration_6months">/6 أشهر</span></div>
+                        </div>
+                        <ul class="plan-features">
+                            <li><span class="feature-icon">✓</span> <span data-translate="standard_feature_1">ولوج للفيديوهات المجانية</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="standard_feature_2">مشاهدة خالية من الإعلانات</span></li>
+                            <li><span class="feature-icon">✗</span> <span data-translate="standard_feature_3">لا تشمل الفيديوهات المدفوعة</span></li>
+                            <li><span class="feature-icon">✗</span> <span data-translate="standard_feature_4">بدون تحميل</span></li>
+                        </ul>
+                        <a href="https://t.me/sofag255" target="_blank" class="btn-primary select-plan-btn" data-translate="subscribe_now_btn">اشترك الآن</a>
+                    </div>
+                    
+                    <!-- Pro Plan -->
+                    <div class="plan-card pro-plan recommended">
+                        <div class="plan-badge" data-translate="most_popular_badge">الأكثر شيوعاً</div>
+                        <div class="plan-header">
+                            <h3 data-translate="pro_plan_title">الخطة برو</h3>
+                            <div class="plan-price">$29.99<span data-translate="monthly_text">/شهرياً</span></div>
+                        </div>
+                        <ul class="plan-features">
+                            <li><span class="feature-icon">✓</span> <span data-translate="pro_feature_1">ولوج لكل الفيديوهات (المجانية والمدفوعة)</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="pro_feature_2">جودة عالية (HD/1080p)</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="pro_feature_3">مشاهدة بدون إعلانات</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="pro_feature_4">دعم عملاء مخصص</span></li>
+                            <li><span class="feature-icon">✗</span> <span data-translate="pro_feature_5">بدون تحميل</span></li>
+                        </ul>
+                        <a href="https://t.me/sofag255" target="_blank" class="btn-primary select-plan-btn" data-translate="subscribe_now_btn">اشترك الآن</a>
+                    </div>
+
+                    <!-- Ultimate Plan -->
+                    <div class="plan-card ultimate-plan">
+                         <div class="plan-header">
+                            <h3 data-translate="ultimate_plan_title">الخطة الفائقة</h3>
+                            <div class="plan-price">$89.99<span data-translate="monthly_text">/شهرياً</span></div>
+                        </div>
+                        <ul class="plan-features">
+                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_1">جميع مزايا الخطة برو</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_2">جودة فائقة (4K UHD)</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_3">تحميل غير محدود للمحتوى</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_4">دعم فني بأولوية قصوى 24/7</span></li>
+                            <li><span class="feature-icon">✓</span> <span data-translate="ultimate_feature_5">وصول مبكر للمحتوى الجديد</span></li>
+                        </ul>
+                        <a href="https://t.me/sofag255" target="_blank" class="btn-primary-outline select-plan-btn" data-translate="choose_ultimate_btn">اختر الخطة الفائقة</a>
+                    </div>
+
+                     <!-- Annual Plan -->
+                    <div class="plan-card annual-plan">
+                        <div class="plan-header">
+                           <h3 data-translate="annual_plan_title">الخطة السنوية</h3>
+                           <div class="plan-price">$899.99<span data-translate="annually_text">/سنوياً</span></div>
+                       </div>
+                       <ul class="plan-features">
+                           <li><span class="feature-icon">✓</span> <span data-translate="annual_feature_1">كل شيء! جميع ميزات الخطة الفائقة</span></li>
+                           <li><span class="feature-icon">✓</span> <span data-translate="annual_feature_2">توفير كبير على مدار العام</span></li>
+                           <li><span class="feature-icon">✓</span> <span data-translate="annual_feature_3">أولوية قصوى في كل شيء</span></li>
+                           <li><span class="feature-icon">✓</span> <span data-translate="annual_feature_4">هدايا وميزات حصرية</span></li>
+                       </ul>
+                       <a href="https://t.me/sofag255" target="_blank" class="btn-primary select-plan-btn" data-translate="subscribe_annually_btn">اشترك سنوياً</a>
+                   </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="settings-section" class="content-section">
+            <div class="container">
+                <h2 class="section-title" data-translate="settings_title">إعدادات المظهر واللغة</h2>
+                <div class="form-container settings-form">
+                    <div class="form-group theme-switcher-group">
+                        <label for="themeToggleBtn" class="theme-label" data-translate="theme_label">المظهر:</label>
+                        <button id="themeToggleBtn" class="theme-toggle-btn" aria-label="تبديل المظهر" data-theme="light">
+                            <span class="icon-sun">☀</span>
+                            <span class="icon-moon">☾</span>
+                            <span class="toggle-slider"></span>
+                        </button>
+                    </div>
+                    <div class="form-group">
+                        <label for="languageSelect" data-translate="language_label">لغة الواجهة:</label>
+                        <select id="languageSelect" class="form-control">
+                            <option value="ar" selected>العربية</option>
+                            <option value="en">English</option>
+                        </select>
+                    </div>
+                    <button type="submit" id="saveAppearanceSettingsBtn" class="btn-primary btn-block" data-translate="save_settings_btn">حفظ الإعدادات</button>
+                </div>
+            </div>
+        </section>
+        
+        <section id="manage-account-section" class="content-section">
+            <div class="container">
+                <h2 class="section-title" data-translate="manage_account_title">إدارة الحساب</h2>
+                <div id="manageAccountMessage" class="auth-message" style="display:none;"></div>
+
+                <div class="form-container settings-form">
+                    <div class="form-group">
+                        <label for="currentUsernameDisplay" data-translate="current_username_label">اسم المستخدم الحالي:</label>
+                        <input type="text" id="currentUsernameDisplay" class="form-control" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="newUsername" data-translate="new_username_label">اسم المستخدم الجديد:</label>
+                        <input type="text" id="newUsername" class="form-control" data-translate-placeholder="new_username_placeholder" placeholder="اتركه فارغًا لعدم التغيير">
+                    </div>
+                    <button id="updateUsernameBtn" class="btn-primary btn-block" data-translate="update_username_btn">تحديث اسم المستخدم</button>
+                </div>
+
+                <div class="form-container settings-form mt-2">
+                    <h3 class="sub-section-title" data-translate="change_password_title">تغيير كلمة المرور</h3>
+                    <div class="form-group">
+                        <label for="currentPassword" data-translate="current_password_label">كلمة المرور الحالية:</label>
+                        <input type="password" id="currentPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword" data-translate="new_password_label">كلمة المرور الجديدة:</label>
+                        <input type="password" id="newPassword" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmNewPassword" data-translate="confirm_new_password_label">تأكيد كلمة المرور الجديدة:</label>
+                        <input type="password" id="confirmNewPassword" class="form-control" required>
+                    </div>
+                    <button id="updatePasswordBtn" class="btn-primary btn-block" data-translate="update_password_btn">تحديث كلمة المرور</button>
+                </div>
+
+                <div class="form-container settings-form mt-2">
+                    <h3 class="sub-section-title">إجراءات الحساب</h3>
+                    <!-- These buttons are placeholders. You need to hook them in JS. -->
+                    <button id="logoutButtonFromAccountPage" class="btn-secondary btn-block">تسجيل الخروج</button>
+                    <button id="deleteAccountBtn" class="btn-danger btn-block mt-2">حذف الحساب نهائياً</button>
+                </div>
+            </div>
+        </section>
+
+        <section id="login-section" class="content-section">
+            <div class="container">
+                <div id="authMessage" class="auth-message" style="display:none;"></div>
+                
+                <form id="loginForm" class="auth-form-container" style="display: block;"> 
+                    <h2 class="section-title login-form-title" data-translate="login_title_section">تسجيل الدخول</h2>
+                    <div class="form-container">
+                        <div class="form-group">
+                            <label for="loginEmail" data-translate="email_label">البريد الإلكتروني</label>
+                            <input type="email" id="loginEmail" class="form-control" required data-translate-placeholder="email_placeholder" placeholder="example@mail.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="loginPassword" data-translate="password_label">كلمة المرور</label>
+                            <input type="password" id="loginPassword" class="form-control" required data-translate-placeholder="password_placeholder" placeholder="********">
+                        </div>
+                        <button type="submit" class="btn-primary btn-block" data-translate="login_btn">تسجيل الدخول</button>
+                        <p class="mt-2 text-center form-switch-text">
+                            <span data-translate="no_account_text">ليس لديك حساب؟</span> <a href="#login-section" id="switchToRegister" class="auth-link" data-translate="create_account_link">أنشئ حساباً جديداً</a>
+                        </p>
+                    </div>
+                </form>
+
+                <form id="registerForm" style="display:none;" class="auth-form-container">
+                    <h2 class="section-title register-form-title" data-translate="create_account_title">إنشاء حساب جديد</h2> 
+                    <div class="form-container">
+                        <p class="password-warning" data-translate="password_warning_text"><b>تنبيه هام:</b> لا يمكن استعادة كلمة المرور إذا نسيتها. الرجاء حفظها في مكان آمن أو استخدام تلميح قوي لتذكرها.</p>
+                        <div class="form-group">
+                            <label for="registerUsername" data-translate="username_label">اسم المستخدم</label>
+                            <input type="text" id="registerUsername" class="form-control" required data-translate-placeholder="username_placeholder" placeholder="اسمك الفريد">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerEmail" data-translate="email_label">البريد الإلكتروني</label>
+                            <input type="email" id="registerEmail" class="form-control" required data-translate-placeholder="email_placeholder" placeholder="example@mail.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerPassword" data-translate="password_label">كلمة المرور</label>
+                            <input type="password" id="registerPassword" class="form-control" required data-translate-placeholder="password_placeholder_strong" placeholder="كلمة مرور قوية">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerConfirmPassword" data-translate="confirm_password_label">تأكيد كلمة المرور</label>
+                            <input type="password" id="registerConfirmPassword" class="form-control" required data-translate-placeholder="confirm_password_placeholder" placeholder="أعد إدخال كلمة المرور">
+                        </div>
+                        <div class="form-group">
+                            <label for="registerHint" data-translate="password_hint_label">تلميح كلمة المرور (اختياري)</label>
+                            <input type="text" id="registerHint" class="form-control" data-translate-placeholder="password_hint_placeholder" placeholder="مثال: اسم أول حيوان أليف">
+                        </div>
+                        <button type="submit" class="btn-primary btn-block" data-translate="create_account_btn">إنشاء حساب</button>
+                        <p class="mt-2 text-center form-switch-text">
+                            <span data-translate="already_have_account_text">لديك حساب بالفعل؟</span> <a href="#login-section" id="switchToLogin" class="auth-link" data-translate="login_link_from_register">سجل الدخول</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p id="footer-text">© <span id="currentYear"></span> SofagHub</p>
+        </div>
+    </footer>
+
+    <div id="premiumContentModal" class="modal" style="display: none;"> 
+        <div class="modal-content">
+            <span class="close-modal-btn" aria-label="Close modal">×</span>
+            <div class="modal-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="currentColor"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6-5c1.65 0 3 1.35 3 3v2H9V6c0-1.65 1.35-3 3-3zm6 15H6V10h12v8z"/><path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/></svg>
+            </div>
+            <h2 data-translate="modal_title">محتوى حصري للمشتركين!</h2>
+            <p data-translate="modal_description_generic">هذا الفيديو يتطلب اشتراكًا مميزًا للوصول إليه.</p>
+            <ul class="modal-features">
+                <li><span class="feature-icon">✓</span> <span data-translate="modal_feature_all_videos">جميع الفيديوهات (مجانية ومدفوعة)</span></li>
+                <li><span class="feature-icon">✓</span> <span data-translate="modal_feature_high_quality">جودة عالية تصل إلى 4K</span></li>
+                <li><span class="feature-icon">✓</span> <span data-translate="modal_feature_no_ads">بدون إعلانات مزعجة</span></li>
+                <li><span class="feature-icon">✓</span> <span data-translate="modal_feature_download">تحميل المحتوى</span></li>
+            </ul>
+            <a href="https://t.me/sofag255" target="_blank" id="modalSubscribeBtn" class="btn-primary modal-action-btn" data-translate="subscribe_now_btn_modal">الاشتراك الآن</a>
+            <a href="#subscription-section" id="modalSeePlansBtn" data-section-target="subscription-section" class="modal-link" data-translate="see_all_plans_link">مشاهدة جميع الخطط</a>
+        </div>
+    </div>
+
+    <div id="videoPlayerModal" class="video-player-modal">
+        <div class="video-player-modal-content">
+            <span class="close-video-player-btn" id="closeVideoPlayerModalBtn" aria-label="Close video player">×</span>
+            <video id="mainVideoPlayer" controls controlsList="nodownload" oncontextmenu="return false;"></video>
+            <div id="videoPlayerTitle"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
+

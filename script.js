@@ -1,28 +1,27 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const navLinks = document.querySelectorAll('#navLinks li a.nav-link[data-section], .logo[data-section]');
+    // --- ELEMENT SELECTORS ---
+    const navLinks = document.querySelectorAll('#navLinks li a.nav-link[data-section-target], .logo[data-section-target], #headerAccountBtn[data-section-target]');
     const contentSections = document.querySelectorAll('.content-section');
-    const menuToggle = document.getElementById('menuToggle');
-    const navUl = document.getElementById('navLinks');
     const themeToggleBtn = document.getElementById('themeToggleBtn');
     const body = document.body;
     const currentYearSpan = document.getElementById('currentYear');
     const languageSelect = document.getElementById('languageSelect');
     const saveAppearanceSettingsBtn = document.getElementById('saveAppearanceSettingsBtn');
-
-    const navLoginLinkContainer = document.getElementById('navLoginLinkContainer');
-    const navAccountDropdownContainer = document.getElementById('navAccountDropdownContainer');
-    const accountDropdownBtn = document.getElementById('accountDropdownBtn');
-    const accountDropdownContent = document.getElementById('accountDropdownContent');
-    const loggedInUsernameDropdownSpan = document.getElementById('loggedInUsernameDropdown');
-    const userCurrentPlanSpan = document.getElementById('userCurrentPlan');
-    const manageAccountLink = document.getElementById('manageAccountLink');
-    const logoutButtonFromDropdown = document.getElementById('logoutButtonFromDropdown');
-    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
-    
+    const headerLoginBtn = document.getElementById('headerLoginBtn');
+    const headerAccountBtn = document.getElementById('headerAccountBtn');
     const globalMessageDiv = document.getElementById('globalMessage');
     const authMessageDiv = document.getElementById('authMessage');
     const manageAccountMessageDiv = document.getElementById('manageAccountMessage');
-
+    
+    // Account Management Page Selectors
+    const accountPageWrapper = document.getElementById('manage-account-section');
+    const accountOverviewPlan = document.getElementById('accountOverviewPlan');
+    const accountOverviewUsername = document.getElementById('accountOverviewUsername');
+    const accountOverviewEmail = document.getElementById('accountOverviewEmail');
+    const showUpdateUsernameBtn = document.getElementById('showUpdateUsernameBtn');
+    const showUpdatePasswordBtn = document.getElementById('showUpdatePasswordBtn');
+    const updateUsernameForm = document.getElementById('updateUsernameForm');
+    const updatePasswordForm = document.getElementById('updatePasswordForm');
     const currentUsernameDisplay = document.getElementById('currentUsernameDisplay');
     const newUsernameInput = document.getElementById('newUsername');
     const updateUsernameBtn = document.getElementById('updateUsernameBtn');
@@ -30,38 +29,86 @@ document.addEventListener('DOMContentLoaded', () => {
     const newPasswordInput = document.getElementById('newPassword');
     const confirmNewPasswordInput = document.getElementById('confirmNewPassword');
     const updatePasswordBtn = document.getElementById('updatePasswordBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    const deleteAccountBtn = document.getElementById('deleteAccountBtn');
 
+    // Video Player Modal
     const videoPlayerModal = document.getElementById('videoPlayerModal');
     const mainVideoPlayer = document.getElementById('mainVideoPlayer');
     const videoPlayerTitle = document.getElementById('videoPlayerTitle');
     const closeVideoPlayerModalBtn = document.getElementById('closeVideoPlayerModalBtn');
 
+    // Auth Forms
     const loginForm = document.getElementById('loginForm');
     const registerForm = document.getElementById('registerForm');
     const switchToRegisterLink = document.getElementById('switchToRegister');
     const switchToLoginLink = document.getElementById('switchToLogin');
+    const loginFormTitleEl = loginForm?.querySelector('.login-form-title');
+    const registerFormTitleEl = registerForm?.querySelector('.register-form-title');
     
-    // تحديد عناصر العناوين داخل النماذج مباشرة
-    const loginFormTitle = loginForm?.querySelector('.section-title[data-translate="login_title_section"]');
-    const registerFormTitle = registerForm?.querySelector('.section-title[data-translate="create_account_title"]');
+    // Premium Modal
+    const premiumModal = document.getElementById('premiumContentModal');
 
-
+    // --- STATE VARIABLES ---
     let allVideosData = [];
-    let currentUserData = null;
+    let currentUserData = null; // Will store { username, email, plan }
 
+    // --- TRANSLATIONS ---
     const translations = {
         en: {
-            site_title: "SofagHub - Your SikoSiko Hub", nav_home: "Home", nav_videos: "Videos", nav_subscriptions: "Subscriptions", nav_settings: "Settings", nav_login: "Login", search_placeholder: "Search videos...", search_button_text: "Search", welcome_title: "Welcome to SofagHub!", site_subtitle_text: "Your premium Arabic site for Siko Siko videos.", suggested_for_you: "Suggested for You", browse_videos_title: "Browse Videos", subscription_plans_title: "Subscription Plans", basic_plan_title: "Basic Plan", free_plan_price: "Free", basic_feature_1: "Limited video access", basic_feature_2: "Low quality (SD)", basic_feature_3: "Many annoying ads", basic_feature_4: "Forum support", start_free_btn: "Start Free", most_popular_badge: "Most Popular", premium_plan_title: "Premium Plan", monthly_text: "/month", premium_feature_1: "Access to all videos", premium_feature_2: "High quality (HD/1080p)", premium_feature_3: "Ad-free watching", premium_feature_4: "New exclusive content weekly", premium_feature_5: "Email support", subscribe_now_btn: "Subscribe Now", ultimate_plan_title: "Ultimate Plan", ultimate_feature_1: "All Premium features", ultimate_feature_2: "Ultra high quality (4K UHD)", ultimate_feature_3: "Download videos for offline viewing", ultimate_feature_4: "Early access to new content", ultimate_feature_5: "Dedicated & fast support", choose_ultimate_btn: "Choose Ultimate Plan", settings_title: "Appearance & Language Settings", theme_label: "Appearance:", language_label: "Interface Language:", save_settings_btn: "Save Settings", login_title_section: "Login", email_label: "Email", email_placeholder: "example@mail.com", password_label: "Password", password_placeholder: "********", login_btn: "Login", no_account_text: "Don't have an account?", create_account_link: "Create a new account", create_account_title: "Create New Account", username_label: "Username", username_placeholder: "Your unique name", password_placeholder_strong: "Strong password", confirm_password_label: "Confirm Password", confirm_password_placeholder: "Re-enter password", create_account_btn: "Create Account", already_have_account_text: "Already have an account?", login_link_from_register: "Login", footer_text: "Arabic Siko Siko, coming soon.", modal_title: "Exclusive Content for Subscribers!", modal_description: "This video requires a premium subscription. Get unlimited access to all exclusive videos in high quality, ad-free.", modal_feature_1: "New exclusive videos weekly", modal_feature_2: "Up to 4K quality", modal_feature_3: "No annoying ads", modal_feature_4: "Premium technical support", subscribe_now_btn_modal: "Subscribe Now", see_all_plans_link: "See All Plans", tag_free: "Free", tag_paid: "Paid", views_text: "views", watch_now_btn_text: "Watch Now", premium_access_btn_text: "Exclusive Access", error_generic_ar: "An error occurred. Please try again.", error_generic_en: "An error occurred. Please try again.", error_loading_videos_ar: "Error loading videos. Please try again later.", error_loading_videos_en: "Error loading videos. Please try again later.", no_videos_ar: "No videos to display at the moment.", no_videos_en: "No videos to display at the moment.", password_mismatch_ar: "Passwords do not match.", password_mismatch_en: "Passwords do not match.", password_short_ar: "Password must be at least 6 characters long.", password_short_en: "Password must be at least 6 characters long.", error_logout_ar: "Error during logout.", error_logout_en: "Error during logout.", search_no_results_ar: "No search results found for '${query}'.", search_no_results_en: "No search results found for '${query}'.", settings_saved_ar: "Settings saved successfully!", settings_saved_en: "Settings saved successfully!", theme_toggle_light: "Switch to Light Theme", theme_toggle_dark: "Switch to Dark Theme", video_token_error_ar: "Error getting video viewing permission. Please try again.", video_token_error_en: "Error getting video viewing permission. Please try again.",
-            plan_label: "Plan:", manage_account_link: "Manage Account", nav_logout_dropdown: "Logout", delete_account_link: "Delete Account", manage_account_title: "Manage Account", current_username_label: "Current Username:", new_username_label: "New Username:", new_username_placeholder: "Leave blank to keep current", update_username_btn: "Update Username", change_password_title: "Change Password", current_password_label: "Current Password:", new_password_label: "New Password:", confirm_new_password_label: "Confirm New Password:", update_password_btn: "Update Password", logout_confirm_title: "Confirm Logout", logout_confirm_message: "Are you sure you want to log out?", delete_account_confirm_title: "Confirm Account Deletion", delete_account_warning: "Warning! This action is irreversible. All your data and subscription (if any) will be permanently deleted. You will not be able to recover your account.", delete_account_prompt_password: "To confirm deletion, please enter your current password:", delete_account_success: "Your account has been successfully deleted.", delete_account_failed: "Failed to delete account. Please check your password or try again later.", username_updated_success: "Username updated successfully.", password_updated_success: "Password updated successfully.", confirm_action: "Confirm", cancel_action: "Cancel", password_fields_required_ar: "Password fields required.", password_fields_required_en: "Password fields required.", password_required_for_delete_ar: "Password required for deletion.", password_required_for_delete_en: "Password required for deletion."
+            site_title: "SofagHub - Your SikoSiko Hub", nav_home: "Home", nav_videos: "Videos", nav_subscriptions: "Subscriptions", nav_settings: "Settings", nav_login: "Login", search_placeholder: "Search videos...", search_button_text: "Search", welcome_title: "Welcome to SofagHub!", site_subtitle_text: "Your premium Arabic site for Siko Siko videos.", suggested_for_you: "Suggested for You", browse_videos_title: "Browse Videos", subscription_plans_title: "Subscription Plans", 
+            free_plan_title: "Free Plan", free_plan_price: "Free", free_feature_1: "Limited free videos", free_feature_2: "Low quality (SD)", free_feature_3: "With Ads", free_feature_4: "No downloads", start_free_btn: "Start Free", 
+            standard_plan_title: "Standard Plan", standard_duration_6months: "/6 months", standard_feature_1: "Access to free videos", standard_feature_2: "Ad-free watching", standard_feature_3: "Paid videos not included", standard_feature_4: "No downloads",
+            most_popular_badge: "Most Popular", pro_plan_title: "Pro Plan", monthly_text: "/month", pro_feature_1: "All videos (Free & Paid)", pro_feature_2: "High quality (HD/1080p)", pro_feature_3: "Ad-free watching", pro_feature_4: "Dedicated customer support", pro_feature_5: "No downloads", subscribe_now_btn: "Subscribe Now", 
+            ultimate_plan_title: "Ultimate Plan", ultimate_feature_1: "All Pro features", ultimate_feature_2: "Ultra high quality (4K UHD)", ultimate_feature_3: "Unlimited downloads", ultimate_feature_4: "24/7 priority support", ultimate_feature_5: "Early access to new content", choose_ultimate_btn: "Choose Ultimate Plan",
+            annual_plan_title: "Annual Plan", annually_text: "/year", annual_feature_1: "Everything! All Ultimate features", annual_feature_2: "Huge savings annually", annual_feature_3: "Top priority in everything", annual_feature_4: "Exclusive gifts & features", subscribe_annually_btn: "Subscribe Annually",
+            settings_title: "Appearance & Language Settings", theme_label: "Appearance:", language_label: "Interface Language:", save_settings_btn: "Save Settings", 
+            login_title_section: "Login", email_label: "Email", email_placeholder: "example@gmail.com", password_label: "Password", password_placeholder: "********", login_btn: "Login", no_account_text: "Don't have an account?", create_account_link: "Create a new account", 
+            create_account_title: "Create New Account", username_label: "Username", username_placeholder: "e.g., user123 (lowercase & numbers only)", password_placeholder_strong: "Strong password", confirm_password_label: "Confirm Password", confirm_password_placeholder: "Re-enter password", create_account_btn: "Create Account", already_have_account_text: "Already have an account?", login_link_from_register: "Login", 
+            password_warning_text: "Important: Password cannot be recovered if forgotten. Please save it securely or use a strong hint.", password_hint_label: "Password Hint (Optional)", password_hint_placeholder: "e.g., First pet's name",
+            footer_text: "Arabic Siko Siko, coming soon.", 
+            modal_title: "Exclusive Content!", modal_description_generic: "This video requires a premium subscription to access.", modal_feature_all_videos: "All videos (Free & Paid)", modal_feature_high_quality: "High quality up to 4K", modal_feature_no_ads: "No annoying ads", modal_feature_download: "Download content", subscribe_now_btn_modal: "Subscribe Now", see_all_plans_link: "See All Plans", 
+            tag_free: "Free", tag_paid: "Paid", views_text: "views", watch_now_btn_text: "Watch Now", premium_access_btn_text: "Exclusive Access", 
+            error_generic_ar: "An error occurred. Please try again.", error_generic_en: "An error occurred. Please try again.", error_loading_videos_ar: "Error loading videos. Please try again later.", error_loading_videos_en: "Error loading videos. Please try again later.", no_videos_ar: "No videos to display at the moment.", no_videos_en: "No videos to display at the moment.", password_mismatch_ar: "Passwords do not match.", password_mismatch_en: "Passwords do not match.", password_short_ar: "Password must be at least 6 characters long.", password_short_en: "Password must be at least 6 characters long.", error_logout_ar: "Error during logout.", error_logout_en: "Error during logout.", search_no_results_ar: "No search results found for '${query}'.", search_no_results_en: "No search results found for '${query}'.", settings_saved_ar: "Settings saved successfully!", settings_saved_en: "Settings saved successfully!", theme_toggle_light: "Switch to Light Theme", theme_toggle_dark: "Switch to Dark Theme", video_token_error_ar: "Error getting video viewing permission. Please try again.", video_token_error_en: "Error getting video viewing permission. Please try again.",
+            invalid_username_format_ar: "اسم المستخدم يجب أن يحتوي على حروف إنجليزية صغيرة وأرقام فقط.", invalid_username_format_en: "Username must contain only lowercase English letters and numbers.", invalid_email_format_ar: "الرجاء إدخال بريد إلكتروني صالح ينتهي بـ @gmail.com.", invalid_email_format_en: "Please enter a valid email ending with @gmail.com.",
+            manage_account_link: "My Account", manage_account_title: "Manage Account", current_username_label: "Current Username:", new_username_label: "New Username:", new_username_placeholder: "Leave blank to keep current", update_username_btn: "Update Username", change_password_title: "Change Password", current_password_label: "Current Password:", new_password_label: "New Password:", confirm_new_password_label: "Confirm New Password:", update_password_btn: "Update Password", logout_btn_text: "Logout",
+            logout_confirm_title: "Confirm Logout", logout_confirm_message: "Are you sure you want to log out?", delete_account_btn_text: "Delete Account Permanently", delete_account_confirm_title: "Confirm Account Deletion", delete_account_warning: "Warning! This action is irreversible. All your data and subscription (if any) will be permanently deleted. You will not be able to recover your account.", delete_account_prompt_password: "To confirm deletion, please enter your current password:", delete_account_success: "Your account has been successfully deleted.", delete_account_failed: "Failed to delete account. Please check your password or try again later.", username_updated_success: "Username updated successfully.", password_updated_success: "Password updated successfully.", confirm_action: "Confirm", cancel_action: "Cancel", password_fields_required_ar: "Password fields required.", password_fields_required_en: "Password fields required.", password_required_for_delete_ar: "Password required for deletion.", password_required_for_delete_en: "Password required to confirm deletion.",
+            account_overview_title: "Account Overview", my_plan_label: "My Plan:", edit_profile_btn: "Edit Profile", change_password_btn: "Change Password", danger_zone_title: "Danger Zone",
+            plan_free: "Free", plan_standard: "Standard", plan_pro: "Pro", plan_ultimate: "Ultimate", plan_annual: "Annual",
+            video_requires_plan_standard: "This video requires at least a Standard plan.",
+            video_requires_plan_pro: "This video requires at least a Pro plan.",
+            video_requires_plan_ultimate: "This video requires at least an Ultimate plan.",
+            video_requires_plan_annual: "This video requires at least an Annual plan."
         },
         ar: {
-            site_title: "SofagHub - سوفاج هاب", nav_home: "الرئيسية", nav_videos: "الفيديوهات", nav_subscriptions: "الاشتراكات", nav_settings: "الإعدادات", nav_login: "تسجيل الدخول", search_placeholder: "ابحث عن فيديوهات...", search_button_text: "بحث", welcome_title: "مرحباً بك في SofagHub!", site_subtitle_text: "موقع عربي مميز لمشاهدة السيكو سيكو العربي", suggested_for_you: "مقترحة لك", browse_videos_title: "تصفح الفيديوهات", subscription_plans_title: "خطط الاشتراك", basic_plan_title: "الخطة الأساسية", free_plan_price: "مجاني", basic_feature_1: "الوصول لفيديوهات محدودة", basic_feature_2: "جودة مشاهدة منخفضة (SD)", basic_feature_3: "إعلانات كثيرة ومزعجة", basic_feature_4: "دعم عبر المنتدى", start_free_btn: "ابدأ مجاناً", most_popular_badge: "الأكثر شيوعاً", premium_plan_title: "الخطة المميزة", monthly_text: "/شهرياً", premium_feature_1: "الوصول لجميع الفيديوهات", premium_feature_2: "جودة مشاهدة عالية (HD/1080p)", premium_feature_3: "مشاهدة بدون إعلانات", premium_feature_4: "محتوى حصري وجديد أسبوعياً", premium_feature_5: "دعم فني عبر البريد", subscribe_now_btn: "اشترك الآن", ultimate_plan_title: "الخطة الفائقة", ultimate_feature_1: "جميع مزايا الخطة المميزة", ultimate_feature_2: "جودة مشاهدة فائقة (4K UHD)", ultimate_feature_3: "تحميل الفيديوهات للمشاهدة لاحقًا", ultimate_feature_4: "وصول مبكر للمحتوى الجديد", ultimate_feature_5: "دعم فني مخصص وسريع", choose_ultimate_btn: "اختر الخطة الفائقة", settings_title: "إعدادات المظهر واللغة", theme_label: "المظهر:", language_label: "لغة الواجهة:", save_settings_btn: "حفظ الإعدادات", login_title_section: "تسجيل الدخول", email_label: "البريد الإلكتروني", email_placeholder: "example@mail.com", password_label: "كلمة المرور", password_placeholder: "********", login_btn: "تسجيل الدخول", no_account_text: "ليس لديك حساب؟", create_account_link: "أنشئ حساباً جديداً", create_account_title: "إنشاء حساب جديد", username_label: "اسم المستخدم", username_placeholder: "اسمك الفريد", password_placeholder_strong: "كلمة مرور قوية", confirm_password_label: "تأكيد كلمة المرور", confirm_password_placeholder: "أعد إدخال كلمة المرور", create_account_btn: "إنشاء حساب", already_have_account_text: "لديك حساب بالفعل؟", login_link_from_register: "سجل الدخول", footer_text: "سيكو سيكو عربي قريب.", modal_title: "محتوى حصري للمشتركين!", modal_description: "هذا الفيديو يتطلب اشتراكًا مميزًا للوصول إليه.", modal_feature_1: "فيديوهات حصرية جديدة أسبوعياً", modal_feature_2: "جودة تصل إلى 4K", modal_feature_3: "بدون إعلانات مزعجة", modal_feature_4: "دعم فني متميز", subscribe_now_btn_modal: "الاشتراك الآن", see_all_plans_link: "مشاهدة جميع الخطط", tag_free: "مجاني", tag_paid: "مدفوع", views_text: "مشاهدات", watch_now_btn_text: "شاهد الآن", premium_access_btn_text: "محتوى حصري", error_generic_ar: "حدث خطأ. حاول مرة أخرى.", error_generic_en: "An error occurred. Please try again.", error_loading_videos_ar: "حدث خطأ أثناء تحميل الفيديوهات. حاول لاحقاً.", error_loading_videos_en: "Error loading videos. Please try again later.", no_videos_ar: "لا توجد فيديوهات لعرضها حاليًا.", no_videos_en: "No videos to display at the moment.", password_mismatch_ar: "كلمتا المرور غير متطابقتين.", password_mismatch_en: "Passwords do not match.", password_short_ar: "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.", password_short_en: "Password must be at least 6 characters long.", error_logout_ar: "حدث خطأ أثناء تسجيل الخروج.", error_logout_en: "Error during logout.", search_no_results_ar: "لا توجد نتائج بحث تطابق '${query}'.", search_no_results_en: "No search results found for '${query}'.", settings_saved_ar: "تم حفظ الإعدادات بنجاح!", settings_saved_en: "Settings saved successfully!", theme_toggle_light: "التبديل إلى المظهر الفاتح", theme_toggle_dark: "التبديل إلى المظهر الداكن", video_token_error_ar: "خطأ في الحصول على إذن مشاهدة الفيديو. حاول مرة أخرى.", video_token_error_en: "Error getting video viewing permission. Please try again.",
-            plan_label: "الخطة:", manage_account_link: "إدارة الحساب", nav_logout_dropdown: "تسجيل الخروج", delete_account_link: "حذف الحساب", manage_account_title: "إدارة الحساب", current_username_label: "اسم المستخدم الحالي:", new_username_label: "اسم المستخدم الجديد:", new_username_placeholder: "اتركه فارغًا لعدم التغيير", update_username_btn: "تحديث اسم المستخدم", change_password_title: "تغيير كلمة المرور", current_password_label: "كلمة المرور الحالية:", new_password_label: "كلمة المرور الجديدة:", confirm_new_password_label: "تأكيد كلمة المرور الجديدة:", update_password_btn: "تحديث كلمة المرور", logout_confirm_title: "تأكيد تسجيل الخروج", logout_confirm_message: "هل أنت متأكد أنك تريد تسجيل الخروج؟", delete_account_confirm_title: "تأكيد حذف الحساب", delete_account_warning: "تحذير! هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع بياناتك واشتراكك (إن وجد) بشكل دائم. لن تتمكن من استعادة حسابك.", delete_account_prompt_password: "لتأكيد الحذف، يرجى إدخال كلمة المرور الحالية:", delete_account_success: "تم حذف حسابك بنجاح.", delete_account_failed: "فشل حذف الحساب. يرجى التحقق من كلمة المرور أو المحاولة مرة أخرى لاحقًا.", username_updated_success: "تم تحديث اسم المستخدم بنجاح.", password_updated_success: "تم تحديث كلمة المرور بنجاح.", confirm_action: "تأكيد", cancel_action: "إلغاء", password_fields_required_ar: "الرجاء ملء جميع حقول كلمة المرور.", password_fields_required_en: "Please fill all password fields.", password_required_for_delete_ar: "كلمة المرور مطلوبة لتأكيد الحذف.", password_required_for_delete_en: "Password required to confirm deletion."
+            site_title: "SofagHub - سوفاج هاب", nav_home: "الرئيسية", nav_videos: "الفيديوهات", nav_subscriptions: "الاشتراكات", nav_settings: "الإعدادات", nav_login: "تسجيل الدخول", search_placeholder: "ابحث عن فيديوهات...", search_button_text: "بحث", welcome_title: "مرحباً بك في SofagHub!", site_subtitle_text: "موقع عربي مميز لمشاهدة السيكو سيكو العربي", suggested_for_you: "مقترحة لك", browse_videos_title: "تصفح الفيديوهات", subscription_plans_title: "خطط الاشتراك", 
+            free_plan_title: "الخطة المجانية", free_plan_price: "مجاني", free_feature_1: "فيديوهات مجانية محدودة", free_feature_2: "جودة منخفضة (SD)", free_feature_3: "مع إعلانات", free_feature_4: "بدون تحميل", start_free_btn: "ابدأ مجاناً", 
+            standard_plan_title: "الخطة القياسية", standard_duration_6months: "/6 أشهر", standard_feature_1: "ولوج للفيديوهات المجانية", standard_feature_2: "مشاهدة خالية من الإعلانات", standard_feature_3: "لا تشمل الفيديوهات المدفوعة", standard_feature_4: "بدون تحميل",
+            most_popular_badge: "الأكثر شيوعاً", pro_plan_title: "الخطة برو", monthly_text: "/شهرياً", pro_feature_1: "ولوج لكل الفيديوهات (المجانية والمدفوعة)", pro_feature_2: "جودة عالية (HD/1080p)", pro_feature_3: "مشاهدة بدون إعلانات", pro_feature_4: "دعم عملاء مخصص", pro_feature_5: "بدون تحميل", subscribe_now_btn: "اشترك الآن", 
+            ultimate_plan_title: "الخطة الفائقة", ultimate_feature_1: "جميع مزايا الخطة برو", ultimate_feature_2: "جودة فائقة (4K UHD)", ultimate_feature_3: "تحميل غير محدود للمحتوى", ultimate_feature_4: "دعم فني بأولوية قصوى 24/7", ultimate_feature_5: "وصول مبكر للمحتوى الجديد", choose_ultimate_btn: "اختر الخطة الفائقة",
+            annual_plan_title: "الخطة السنوية", annually_text: "/سنوياً", annual_feature_1: "كل شيء! جميع ميزات الخطة الفائقة", annual_feature_2: "توفير كبير على مدار العام", annual_feature_3: "أولوية قصوى في كل شيء", annual_feature_4: "هدايا وميزات حصرية", subscribe_annually_btn: "اشترك سنوياً",
+            settings_title: "إعدادات المظهر واللغة", theme_label: "المظهر:", language_label: "لغة الواجهة:", save_settings_btn: "حفظ الإعدادات", 
+            login_title_section: "تسجيل الدخول", email_label: "البريد الإلكتروني", email_placeholder: "example@gmail.com", password_label: "كلمة المرور", password_placeholder: "********", login_btn: "تسجيل الدخول", no_account_text: "ليس لديك حساب؟", create_account_link: "أنشئ حساباً جديداً", 
+            create_account_title: "إنشاء حساب جديد", username_label: "اسم المستخدم", username_placeholder: "مثال: user123 (حروف إنجليزية صغيرة وأرقام فقط)", password_placeholder_strong: "كلمة مرور قوية", confirm_password_label: "تأكيد كلمة المرور", confirm_password_placeholder: "أعد إدخال كلمة المرور", create_account_btn: "إنشاء حساب", already_have_account_text: "لديك حساب بالفعل؟", login_link_from_register: "سجل الدخول", 
+            password_warning_text: "تنبيه هام: لا يمكن استعادة كلمة المرور إذا نسيتها. الرجاء حفظها في مكان آمن أو استخدام تلميح قوي لتذكرها.", password_hint_label: "تلميح كلمة المرور (اختياري)", password_hint_placeholder: "مثال: اسم أول حيوان أليف",
+            footer_text: "سيكو سيكو عربي قريب.", 
+            modal_title: "محتوى حصري!", modal_description_generic: "هذا الفيديو يتطلب اشتراكًا مميزًا للوصول إليه.", modal_feature_all_videos: "جميع الفيديوهات (مجانية ومدفوعة)", modal_feature_high_quality: "جودة عالية تصل إلى 4K", modal_feature_no_ads: "بدون إعلانات مزعجة", modal_feature_download: "تحميل المحتوى", subscribe_now_btn_modal: "الاشتراك الآن", see_all_plans_link: "مشاهدة جميع الخطط", 
+            tag_free: "مجاني", tag_paid: "مدفوع", views_text: "مشاهدات", watch_now_btn_text: "شاهد الآن", premium_access_btn_text: "محتوى حصري", 
+            error_generic_ar: "حدث خطأ. حاول مرة أخرى.", error_generic_en: "An error occurred. Please try again.", error_loading_videos_ar: "حدث خطأ أثناء تحميل الفيديوهات. حاول لاحقاً.", error_loading_videos_en: "Error loading videos. Please try again later.", no_videos_ar: "لا توجد فيديوهات لعرضها حاليًا.", no_videos_en: "No videos to display at the moment.", password_mismatch_ar: "كلمتا المرور غير متطابقتين.", password_mismatch_en: "Passwords do not match.", password_short_ar: "يجب أن تتكون كلمة المرور من 6 أحرف على الأقل.", password_short_en: "Password must be at least 6 characters long.", error_logout_ar: "حدث خطأ أثناء تسجيل الخروج.", error_logout_en: "Error during logout.", search_no_results_ar: "لا توجد نتائج بحث تطابق '${query}'.", search_no_results_en: "No search results found for '${query}'.", settings_saved_ar: "تم حفظ الإعدادات بنجاح!", settings_saved_en: "Settings saved successfully!", theme_toggle_light: "التبديل إلى المظهر الفاتح", theme_toggle_dark: "التبديل إلى المظهر الداكن", video_token_error_ar: "خطأ في الحصول على إذن مشاهدة الفيديو. حاول مرة أخرى.", video_token_error_en: "Error getting video viewing permission. Please try again.",
+            invalid_username_format_ar: "اسم المستخدم يجب أن يحتوي على حروف إنجليزية صغيرة وأرقام فقط.", invalid_username_format_en: "Username must contain only lowercase English letters and numbers.", invalid_email_format_ar: "الرجاء إدخال بريد إلكتروني صالح ينتهي بـ @gmail.com.", invalid_email_format_en: "Please enter a valid email ending with @gmail.com.",
+            manage_account_link: "حسابي", manage_account_title: "إدارة الحساب", current_username_label: "اسم المستخدم الحالي:", new_username_label: "اسم المستخدم الجديد:", new_username_placeholder: "اتركه فارغًا لعدم التغيير", update_username_btn: "تحديث اسم المستخدم", change_password_title: "تغيير كلمة المرور", current_password_label: "كلمة المرور الحالية:", new_password_label: "كلمة المرور الجديدة:", confirm_new_password_label: "تأكيد كلمة المرور الجديدة:", update_password_btn: "تحديث كلمة المرور", logout_btn_text: "تسجيل الخروج",
+            logout_confirm_title: "تأكيد تسجيل الخروج", logout_confirm_message: "هل أنت متأكد أنك تريد تسجيل الخروج؟", delete_account_btn_text: "حذف الحساب نهائياً", delete_account_confirm_title: "تأكيد حذف الحساب", delete_account_warning: "تحذير! هذا الإجراء لا يمكن التراجع عنه. سيتم حذف جميع بياناتك واشتراكك (إن وجد) بشكل دائم. لن تتمكن من استعادة حسابك.", delete_account_prompt_password: "لتأكيد الحذف، يرجى إدخال كلمة المرور الحالية:", delete_account_success: "تم حذف حسابك بنجاح.", delete_account_failed: "فشل حذف الحساب. يرجى التحقق من كلمة المرور أو المحاولة مرة أخرى لاحقًا.", username_updated_success: "تم تحديث اسم المستخدم بنجاح.", password_updated_success: "تم تحديث كلمة المرور بنجاح.", confirm_action: "تأكيد", cancel_action: "إلغاء", password_fields_required_ar: "الرجاء ملء جميع حقول كلمة المرور.", password_fields_required_en: "Please fill all password fields.", password_required_for_delete_ar: "كلمة المرور مطلوبة لتأكيد الحذف.", password_required_for_delete_en: "Password required to confirm deletion.",
+            account_overview_title: "نظرة عامة على الحساب", my_plan_label: "خطتي الحالية:", edit_profile_btn: "تعديل الملف الشخصي", change_password_btn: "تغيير كلمة المرور", danger_zone_title: "منطقة الخطر",
+            plan_free: "مجانية", plan_standard: "القياسية", plan_pro: "برو", plan_ultimate: "الفائقة", plan_annual: "السنوية",
+            video_requires_plan_standard: "هذا الفيديو يتطلب على الأقل الخطة القياسية.",
+            video_requires_plan_pro: "هذا الفيديو يتطلب على الأقل الخطة برو.",
+            video_requires_plan_ultimate: "هذا الفيديو يتطلب على الأقل الخطة الفائقة.",
+            video_requires_plan_annual: "هذا الفيديو يتطلب على الأقل الخطة السنوية."
         }
     };
-
     let currentLang = localStorage.getItem('language') || 'ar';
 
+    // --- HELPER FUNCTIONS ---
     function getTranslation(key, replacements = {}) {
         let translation = translations[currentLang]?.[key] || translations['en']?.[key] || `TR:${key}`;
         for (const placeholder in replacements) {
@@ -70,22 +117,47 @@ document.addEventListener('DOMContentLoaded', () => {
         return translation;
     }
     
-    function showMessage(element, message, isSuccess, duration = 5000) {
+    function showMessage(element, messageKey, isSuccess, duration = 5000, replacements = {}) {
         if (!element) return;
-        element.textContent = message;
-        const baseClass = element.id.includes('global') ? 'global-message' : 
-                          element.id.includes('auth') || element.id.includes('manageAccount') ? 'auth-message' : 'message';
+        const messageText = getTranslation(messageKey, replacements);
+        element.textContent = messageText;
+        const baseClass = element.id.includes('global') ? 'global-message' : 'auth-message';
         element.className = `${baseClass} ${isSuccess ? 'success' : 'error'}`;
         element.style.display = 'block';
         if (duration > 0) {
-            setTimeout(() => {
-                if(element) element.style.display = 'none';
-            }, duration);
+            setTimeout(() => { if(element) element.style.display = 'none'; }, duration);
         }
+    }
+
+    // --- CORE LOGIC ---
+    const planHierarchy = { 'free': 0, 'standard': 1, 'pro': 2, 'ultimate': 3, 'annual': 4 };
+
+    function canUserAccessVideo(videoType, userPlan) {
+        const userPlanLevel = planHierarchy[userPlan || 'free'];
+        const requiredVideoPlanLevel = planHierarchy[videoType] || 0;
+        return userPlanLevel >= requiredVideoPlanLevel;
     }
 
     async function openVideoPlayer(video) {
         if (!videoPlayerModal || !mainVideoPlayer || !videoPlayerTitle) return;
+
+        if (!canUserAccessVideo(video.type, currentUserData ? currentUserData.plan : 'free')) {
+            let requiredPlanKey;
+            switch(video.type) {
+                case 'standard': requiredPlanKey = 'video_requires_plan_standard'; break;
+                case 'pro': requiredPlanKey = 'video_requires_plan_pro'; break;
+                case 'ultimate': requiredPlanKey = 'video_requires_plan_ultimate'; break;
+                case 'annual': requiredPlanKey = 'video_requires_plan_annual'; break;
+                default: requiredPlanKey = 'modal_description_generic'; 
+            }
+            const modalDescriptionElement = premiumModal.querySelector('p[data-translate="modal_description_generic"]');
+            if(modalDescriptionElement) {
+                 modalDescriptionElement.textContent = getTranslation(requiredPlanKey);
+            }
+            openPremiumModal();
+            return;
+        }
+
         try {
             const tokenResponse = await fetch(`/api/request-video-token/${video.id}`, { method: 'POST' });
             if (!tokenResponse.ok) {
@@ -103,28 +175,36 @@ document.addEventListener('DOMContentLoaded', () => {
             mainVideoPlayer.play().catch(e => console.error("Video play failed:", e));
         } catch (error) {
             console.error("Error opening video player:", error);
-            showMessage(globalMessageDiv, getTranslation('video_token_error_ar'), false);
+            showMessage(globalMessageDiv, 'video_token_error_ar', false);
         }
     }
+    
     function closeVideoPlayer() {
         if (!videoPlayerModal || !mainVideoPlayer) return;
         mainVideoPlayer.pause(); mainVideoPlayer.src = "";
         videoPlayerModal.style.display = 'none'; body.style.overflow = '';
     }
-    if (closeVideoPlayerModalBtn) closeVideoPlayerModalBtn.addEventListener('click', closeVideoPlayer);
-    if (videoPlayerModal) videoPlayerModal.addEventListener('click', (event) => { if (event.target === videoPlayerModal) closeVideoPlayer(); });
-    document.addEventListener('keydown', (event) => { if (event.key === "Escape" && videoPlayerModal && videoPlayerModal.style.display === 'flex') closeVideoPlayer();});
 
     function createVideoCard(video) {
         const lang = currentLang;
         const card = document.createElement('div');
         card.className = 'video-card'; card.dataset.type = video.type; card.dataset.videoId = video.id;
-        const tagText = video.type === 'free' ? getTranslation('tag_free') : getTranslation('tag_paid');
-        const tagClass = video.type === 'free' ? 'free-tag-overlay' : 'paid-tag-overlay';
+        
+        const isPaidVideo = video.type !== 'free';
+        const tagText = isPaidVideo ? getTranslation('tag_paid') : getTranslation('tag_free');
+        const tagClass = isPaidVideo ? 'paid-tag-overlay' : 'free-tag-overlay';
+
         let thumbnailUrl = video.thumbnail;
         if (thumbnailUrl && !thumbnailUrl.startsWith('/') && !thumbnailUrl.startsWith('http')) thumbnailUrl = `/${thumbnailUrl}`;
+        
+        const canAccess = canUserAccessVideo(video.type, currentUserData ? currentUserData.plan : 'free');
+        const buttonTextKey = canAccess ? 'watch_now_btn_text' : 'premium_access_btn_text';
+        
+        let buttonClass = 'watch-now-btn';
+        if (isPaidVideo && !canAccess) buttonClass = 'premium-access-btn';
+
         card.innerHTML = `
-            <div class="video-thumbnail ${video.type === 'paid' ? 'premium-video-placeholder-thumb' : ''}">
+            <div class="video-thumbnail ${isPaidVideo && !canAccess ? 'premium-video-placeholder-thumb' : ''}">
                 <span class="video-type-tag ${tagClass}">${tagText}</span>
                 <img src="${thumbnailUrl || 'images/placeholder.png'}" alt="${(video.altText?.[lang]) || video.title[lang]}" loading="lazy">
                 <div class="play-overlay"><svg viewBox="0 0 24 24"><path fill="currentColor" d="M8,5.14V19.14L19,12.14L8,5.14Z" /></svg></div>
@@ -133,117 +213,80 @@ document.addEventListener('DOMContentLoaded', () => {
                 <h4 class="video-title">${video.title[lang]}</h4>
                 <p class="video-meta"><span>${video.views[lang]} ${getTranslation('views_text')}</span></p>
                 <p class="video-description">${video.description[lang]}</p>
-                ${video.type === 'free'
-                ? `<button class="watch-now-btn">${getTranslation('watch_now_btn_text')}</button>`
-                : `<button class="premium-access-btn">${getTranslation('premium_access_btn_text')}</button>`}
+                <button class="${buttonClass}" data-translate="${buttonTextKey}">${getTranslation(buttonTextKey)}</button>
             </div>`;
         const actionTrigger = card.querySelector('.video-thumbnail, .watch-now-btn, .premium-access-btn');
         if (actionTrigger) {
             actionTrigger.addEventListener('click', (e) => {
                 e.preventDefault();
-                if (video.type === 'paid') openModal(); else if (video.id) openVideoPlayer(video);
-                else showMessage(globalMessageDiv, getTranslation('error_generic_ar'), false);
+                openVideoPlayer(video); 
             });
         }
         return card;
     }
 
-    const suggestedVideosContainer = document.getElementById('suggestedVideosContainer');
-    const videoGridContainer = document.getElementById('videoGridContainer');
-
     async function fetchAndPopulateVideos() {
         try {
             const response = await fetch('/api/videos');
-            if (!response.ok) {
-                let errorMsg = getTranslation('error_loading_videos_ar');
-                try { const errorData = await response.json(); if (errorData?.message) errorMsg = errorData.message;} catch (e) {}
-                throw new Error(errorMsg);
-            }
+            if (!response.ok) throw new Error('error_loading_videos_ar');
             allVideosData = await response.json();
-            if (suggestedVideosContainer) {
-                suggestedVideosContainer.innerHTML = '';
-                allVideosData.filter(v => v.isSuggested).forEach(video => suggestedVideosContainer.appendChild(createVideoCard(video)));
-            }
-            if (videoGridContainer) {
-                videoGridContainer.innerHTML = '';
-                if(allVideosData.length > 0) allVideosData.forEach(video => videoGridContainer.appendChild(createVideoCard(video)));
-                else videoGridContainer.innerHTML = `<p class="no-results-message">${getTranslation('no_videos_ar')}</p>`;
-            }
+            
+            // Re-render videos with current auth state
+            updateVideoRenders();
+
         } catch (error) {
             console.error("Error fetching/populating videos:", error);
-            if (videoGridContainer) videoGridContainer.innerHTML = `<p class="no-results-message">${error.message || getTranslation('error_loading_videos_ar')}</p>`;
+            const errorKey = error.message === 'error_loading_videos_ar' ? error.message : 'error_loading_videos_ar';
+            if (document.getElementById('videoGridContainer')) document.getElementById('videoGridContainer').innerHTML = `<p class="no-results-message">${getTranslation(errorKey)}</p>`;
+        }
+    }
+    
+    function updateVideoRenders() {
+        const suggestedContainer = document.getElementById('suggestedVideosContainer');
+        const gridContainer = document.getElementById('videoGridContainer');
+
+        if (suggestedContainer) {
+            suggestedContainer.innerHTML = '';
+            allVideosData.filter(v => v.isSuggested).forEach(video => suggestedContainer.appendChild(createVideoCard(video)));
+        }
+        if (gridContainer) {
+            gridContainer.innerHTML = '';
+            if (allVideosData.length > 0) allVideosData.forEach(video => gridContainer.appendChild(createVideoCard(video)));
+            else gridContainer.innerHTML = `<p class="no-results-message">${getTranslation('no_videos_ar')}</p>`;
         }
     }
 
-    if (menuToggle && navUl) {
-        menuToggle.addEventListener('click', (e) => {
-            e.stopPropagation(); 
-            const isExpanded = navUl.classList.toggle('active');
-            menuToggle.classList.toggle('active');
-            menuToggle.setAttribute('aria-expanded', isExpanded.toString());
-            body.style.overflow = isExpanded ? 'hidden' : '';
-        });
-    }
-    document.addEventListener('click', (e) => {
-        if (navUl && navUl.classList.contains('active') && !navUl.contains(e.target) && menuToggle && !menuToggle.contains(e.target)) {
-            navUl.classList.remove('active');
-            menuToggle.classList.remove('active');
-            menuToggle.setAttribute('aria-expanded', 'false');
-            body.style.overflow = '';
-        }
-    });
-
-    if (currentYearSpan) currentYearSpan.textContent = new Date().getFullYear();
-
-    function setActiveSection(sectionId, fromLinkClick = true) {
-        contentSections.forEach(section => {
-            section.classList.remove('active');
-        });
+    function setActiveSection(sectionId, fromLinkClick = true, updateUrl = true) {
+        contentSections.forEach(section => section.classList.remove('active'));
         const targetSection = document.getElementById(sectionId);
         if (targetSection) {
             targetSection.classList.add('active');
+            if (updateUrl && fromLinkClick) window.location.hash = sectionId;
+
             if (sectionId === 'login-section') {
                 if (loginForm) loginForm.style.display = 'block';
                 if (registerForm) registerForm.style.display = 'none';
                 if (authMessageDiv) authMessageDiv.style.display = 'none';
-                if(loginFormTitle) loginFormTitle.style.display = 'block'; // Use the specific title for login form
-                if(registerFormTitle) registerFormTitle.style.display = 'block'; // Title inside register form
+                if (loginFormTitleEl) loginFormTitleEl.style.display = 'block';
+                if (registerFormTitleEl) registerFormTitleEl.style.display = 'none';
             }
         }
 
-        document.querySelectorAll('#navLinks li a.nav-link[data-section]').forEach(link => {
+        navLinks.forEach(link => {
             link.classList.remove('active');
-            if (link.dataset.section === sectionId) link.classList.add('active');
-        });
-        
-        if (accountDropdownContent && accountDropdownContent.style.display === 'block') {
-             accountDropdownContent.style.display = 'none';
-             if(accountDropdownBtn) accountDropdownBtn.classList.remove('active');
-        }
-        if (navUl && navUl.classList.contains('active') && fromLinkClick) {
-            navUl.classList.remove('active');
-            if (menuToggle) {
-                menuToggle.classList.remove('active');
-                menuToggle.setAttribute('aria-expanded', 'false');
+            if (link.dataset.sectionTarget === sectionId) {
+                link.classList.add('active');
             }
-            if (body) body.style.overflow = '';
-        }
+        });
         
         if (fromLinkClick) {
             const mainContentArea = document.querySelector('main');
-            if (mainContentArea && window.scrollY > (mainContentArea.offsetTop - (document.querySelector('header')?.offsetHeight || 70) - 10) ) {
-                 window.scrollTo({ top: (mainContentArea.offsetTop - (document.querySelector('header')?.offsetHeight || 70) - 10), behavior: 'smooth' });
+            const headerHeight = document.querySelector('header')?.offsetHeight || 80;
+            if (mainContentArea && window.scrollY > (mainContentArea.offsetTop - headerHeight - 10) ) {
+                 window.scrollTo({ top: (mainContentArea.offsetTop - headerHeight - 10), behavior: 'smooth' });
             }
         }
     }
-
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const sectionId = link.dataset.section;
-            if (sectionId) setActiveSection(sectionId);
-        });
-    });
 
     function applyTheme(theme) {
         if (theme === 'dark') body.classList.add('dark-theme');
@@ -253,10 +296,6 @@ document.addEventListener('DOMContentLoaded', () => {
             themeToggleBtn.setAttribute('aria-label', getTranslation(theme === 'dark' ? 'theme_toggle_light' : 'theme_toggle_dark'));
         }
     }
-    if (themeToggleBtn) themeToggleBtn.addEventListener('click', () => {
-        const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
-        localStorage.setItem('theme', newTheme); applyTheme(newTheme);
-    });
 
     function setLanguage(lang) {
         currentLang = lang; localStorage.setItem('language', lang);
@@ -271,99 +310,191 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('[data-translate-placeholder]').forEach(el => el.placeholder = getTranslation(el.dataset.translatePlaceholder));
         fetchAndPopulateVideos();
         applyTheme(localStorage.getItem('theme') || 'light');
-        if(document.querySelector('#searchButton .search-button-text')) document.querySelector('#searchButton .search-button-text').textContent = getTranslation('search_button_text');
-        checkAuthState();
     }
-    if (languageSelect) { languageSelect.value = currentLang; languageSelect.addEventListener('change', function () { setLanguage(this.value); }); }
-    if (saveAppearanceSettingsBtn) {
-        saveAppearanceSettingsBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            showMessage(globalMessageDiv, getTranslation('settings_saved_ar'), true);
-        });
+
+    // --- AUTHENTICATION & UI UPDATES ---
+    function renderAccountPage(userData) {
+        if (!userData || !accountPageWrapper) return;
+
+        // Set overview data
+        if(accountOverviewUsername) accountOverviewUsername.textContent = userData.username;
+        if(accountOverviewEmail) accountOverviewEmail.textContent = userData.email;
+        if(accountOverviewPlan) accountOverviewPlan.textContent = getTranslation(`plan_${userData.plan}`);
+
+        // Style page based on plan
+        const planClass = `plan-${userData.plan}`;
+        accountPageWrapper.className = `content-section ${planClass}`; // Remove previous plan classes
+        if(document.getElementById(accountPageWrapper.id)?.classList.contains('active')) {
+            accountPageWrapper.classList.add('active');
+        }
+
+
+        // Set form defaults
+        if (currentUsernameDisplay) currentUsernameDisplay.value = userData.username;
+        if (newUsernameInput) newUsernameInput.value = '';
+        if(currentPasswordInput) currentPasswordInput.value = '';
+        if(newPasswordInput) newPasswordInput.value = '';
+        if(confirmNewPasswordInput) confirmNewPasswordInput.value = '';
+        
+        // Hide forms initially
+        if(updateUsernameForm) updateUsernameForm.style.display = 'none';
+        if(updatePasswordForm) updatePasswordForm.style.display = 'none';
     }
 
     function updateAuthUI(isLoggedIn, userData = null) {
         currentUserData = isLoggedIn ? userData : null;
+        
         if (isLoggedIn && userData) {
-            if (navLoginLinkContainer) navLoginLinkContainer.style.display = 'none';
-            if (navAccountDropdownContainer) navAccountDropdownContainer.style.display = 'inline-block';
-            if (loggedInUsernameDropdownSpan) loggedInUsernameDropdownSpan.textContent = userData.username;
-            if (userCurrentPlanSpan) {
-                const planKey = userData.plan === 'free' ? 'free_plan_price' : `${userData.plan}_plan_title`;
-                userCurrentPlanSpan.textContent = getTranslation(planKey);
-                userCurrentPlanSpan.dataset.translate = planKey; 
-            }
-            if (accountDropdownBtn) accountDropdownBtn.classList.remove('active');
-            if (currentUsernameDisplay) currentUsernameDisplay.value = userData.username;
+            localStorage.setItem('currentUser', JSON.stringify(userData));
+            if (headerLoginBtn) headerLoginBtn.style.display = 'none';
+            if (headerAccountBtn) headerAccountBtn.style.display = 'inline-block';
+            renderAccountPage(userData);
         } else {
-            if (navLoginLinkContainer) navLoginLinkContainer.style.display = 'block';
-            if (navAccountDropdownContainer) navAccountDropdownContainer.style.display = 'none';
-            if (accountDropdownContent && accountDropdownContent.style.display === 'block') {
-                accountDropdownContent.style.display = 'none';
-                if(accountDropdownBtn) accountDropdownBtn.classList.remove('active');
-            }
+            localStorage.removeItem('currentUser');
+            if (headerLoginBtn) headerLoginBtn.style.display = 'inline-block';
+            if (headerAccountBtn) headerAccountBtn.style.display = 'none';
         }
+        
+        // Always refresh video renders as permissions might have changed
+        updateVideoRenders();
     }
     
     async function checkAuthState() {
+        // Optimistic UI update from localStorage
+        const storedUser = localStorage.getItem('currentUser');
+        if (storedUser) {
+            try {
+                const user = JSON.parse(storedUser);
+                updateAuthUI(true, user);
+            } catch (e) {
+                localStorage.removeItem('currentUser');
+                updateAuthUI(false);
+            }
+        }
+
+        // Verify with server
         try {
-            const response = await fetch('/api/check-auth'); // credentials: 'include' is default for same-origin
+            const response = await fetch('/api/check-auth'); 
             const data = await response.json();
             updateAuthUI(data.loggedIn, data.user);
-        } catch (error) { console.error('Error checking auth state:', error); updateAuthUI(false); }
+        } catch (error) { 
+            console.error('Error checking auth state with server:', error); 
+            // If server check fails but we have local data, we might be offline.
+            // The optimistic UI remains. If it was a real auth error, the next API call will fail.
+            if (!storedUser) {
+                updateAuthUI(false);
+            }
+        }
     }
     
-    if (accountDropdownBtn && accountDropdownContent) {
-        accountDropdownBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const isCurrentlyShown = accountDropdownContent.style.display === 'block';
-            accountDropdownContent.style.display = isCurrentlyShown ? 'none' : 'block';
-            accountDropdownBtn.classList.toggle('active', !isCurrentlyShown);
-        });
-    }
-    document.addEventListener('click', (e) => {
-        if (accountDropdownContent && accountDropdownContent.style.display === 'block') {
-            if (accountDropdownBtn && !accountDropdownBtn.contains(e.target) && !accountDropdownContent.contains(e.target)) {
-                accountDropdownContent.style.display = 'none';
-                if(accountDropdownBtn) accountDropdownBtn.classList.remove('active');
+    async function handleLogout() {
+        const confirmLogout = confirm(getTranslation('logout_confirm_message'));
+        if (confirmLogout) {
+            try {
+                await fetch('/api/logout');
+                updateAuthUI(false);
+                setActiveSection('home-section', true, true);
+                showMessage(globalMessageDiv, 'logout_success', true);
+            } catch (error) {
+                showMessage(globalMessageDiv, 'error_logout_ar', false);
             }
+        }
+    }
+
+    async function handleDeleteAccount() {
+        const confirmWarning = confirm(getTranslation('delete_account_warning'));
+        if (!confirmWarning) return;
+
+        const password = prompt(getTranslation('delete_account_prompt_password'));
+        if (password === null) return; // User clicked cancel
+        if (!password) {
+            showMessage(manageAccountMessageDiv, 'password_required_for_delete_ar', false);
+            return;
+        }
+
+        try {
+            const response = await fetch('/api/account/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert(getTranslation('delete_account_success'));
+                updateAuthUI(false);
+                window.location.hash = 'home-section';
+                window.location.reload(); // Force a full refresh
+            } else {
+                showMessage(manageAccountMessageDiv, data.messageKey || 'delete_account_failed', false);
+            }
+        } catch (error) {
+            showMessage(manageAccountMessageDiv, 'delete_account_failed', false);
+        }
+    }
+
+    // --- EVENT LISTENERS ---
+
+    // Navigation & Routing
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = link.dataset.sectionTarget;
+            if (sectionId) {
+                setActiveSection(sectionId, true, true);
+                if (sectionId === 'manage-account-section' && currentUserData) {
+                    renderAccountPage(currentUserData);
+                }
+            }
+        });
+    });
+    
+    window.addEventListener('hashchange', () => {
+        const hash = window.location.hash.substring(1);
+        const sectionId = hash.split('?')[0]; 
+        if (sectionId && document.getElementById(sectionId)) {
+            setActiveSection(sectionId, false, false); 
+        } else if (!sectionId) {
+            setActiveSection('home-section', false, false); 
         }
     });
 
-    if (manageAccountLink) {
-        manageAccountLink.addEventListener('click', (e) => {
+    // Theme & Language
+    if (themeToggleBtn) themeToggleBtn.addEventListener('click', () => {
+        const newTheme = body.classList.contains('dark-theme') ? 'light' : 'dark';
+        localStorage.setItem('theme', newTheme); applyTheme(newTheme);
+    });
+    if (languageSelect) {
+        languageSelect.value = currentLang;
+        languageSelect.addEventListener('change', function () { setLanguage(this.value); });
+    }
+    if (saveAppearanceSettingsBtn) {
+        saveAppearanceSettingsBtn.addEventListener('click', (e) => {
             e.preventDefault();
-            setActiveSection('manage-account-section');
-            if (currentUserData && currentUsernameDisplay) currentUsernameDisplay.value = currentUserData.username;
-            else {
-                fetch('/api/account/info').then(res => res.json()).then(data => {
-                    if (data.success && data.user && currentUsernameDisplay) currentUsernameDisplay.value = data.user.username;
-                }).catch(err => console.error("Error fetching account info:", err));
-            }
-            if(currentPasswordInput) currentPasswordInput.value = '';
-            if(newPasswordInput) newPasswordInput.value = '';
-            if(confirmNewPasswordInput) confirmNewPasswordInput.value = '';
-            if(newUsernameInput) newUsernameInput.value = '';
-            if(manageAccountMessageDiv) manageAccountMessageDiv.style.display = 'none';
+            showMessage(globalMessageDiv, 'settings_saved_ar', true);
         });
     }
 
+    // Auth Form Switching
     if (switchToRegisterLink && switchToLoginLink && loginForm && registerForm) {
         switchToRegisterLink.addEventListener('click', (e) => {
             e.preventDefault();
             loginForm.style.display = 'none';
             registerForm.style.display = 'block';
             if (authMessageDiv) authMessageDiv.style.display = 'none';
-            // The titles are now part of their respective forms in HTML
+            if(loginFormTitleEl) loginFormTitleEl.style.display = 'none';
+            if(registerFormTitleEl) registerFormTitleEl.style.display = 'block';
         });
         switchToLoginLink.addEventListener('click', (e) => {
             e.preventDefault();
             registerForm.style.display = 'none';
             loginForm.style.display = 'block';
             if (authMessageDiv) authMessageDiv.style.display = 'none';
+            if(loginFormTitleEl) loginFormTitleEl.style.display = 'block';
+            if(registerFormTitleEl) registerFormTitleEl.style.display = 'none';
         });
     }
 
+    // Registration Form
     if (registerForm) {
         registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -372,25 +503,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('registerPassword').value;
             const confirmPassword = document.getElementById('registerConfirmPassword').value;
             const hint = document.getElementById('registerHint').value;
-            if (password !== confirmPassword) { showMessage(authMessageDiv, getTranslation('password_mismatch_ar'), false); return; }
-            if (password.length < 6) { showMessage(authMessageDiv, getTranslation('password_short_ar'), false); return; }
+
+            // Client-side validation
+            const usernameRegex = /^[a-z0-9]+$/;
+            if (!usernameRegex.test(username)) {
+                showMessage(authMessageDiv, 'invalid_username_format_ar', false); return;
+            }
+            if (!email.toLowerCase().endsWith('@gmail.com')) {
+                showMessage(authMessageDiv, 'invalid_email_format_ar', false); return;
+            }
+            if (password !== confirmPassword) { showMessage(authMessageDiv, 'password_mismatch_ar', false); return; }
+            if (password.length < 6) { showMessage(authMessageDiv, 'password_short_ar', false); return; }
+
             try {
                 const response = await fetch('/api/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ username, email, password, hint }) });
                 const data = await response.json();
-                showMessage(authMessageDiv, data.message, data.success);
+                showMessage(authMessageDiv, data.messageKey || (data.success ? 'registration_success' : 'registration_failed'), data.success, 5000, data.replacements || {}); 
                 if (data.success && data.user) {
                     updateAuthUI(true, data.user);
                     setTimeout(() => {
-                        setActiveSection('home-section');
+                        setActiveSection('home-section', true, true);
                         registerForm.reset(); 
-                        if (loginForm) loginForm.style.display = 'block'; // Default view for login section
-                        if (registerForm) registerForm.style.display = 'none';
                     }, 1500);
                 }
-            } catch (error) { showMessage(authMessageDiv, getTranslation('error_generic_ar'), false); }
+            } catch (error) { showMessage(authMessageDiv, 'error_generic_ar', false); }
         });
     }
     
+    // Login Form
     if (loginForm) {
         loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -399,149 +539,145 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await fetch('/api/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, password }) });
                 const data = await response.json();
-                showMessage(authMessageDiv, data.message, data.success); 
+                showMessage(authMessageDiv, data.messageKey || (data.success ? 'login_success' : 'login_failed'), data.success, 5000, data.replacements || {}); 
                 if (data.success && data.user) {
                     updateAuthUI(true, data.user);
                     setTimeout(() => {
-                        setActiveSection('home-section');
+                        setActiveSection('home-section', true, true);
                         loginForm.reset();
                     }, 1500);
                 }
-            } catch (error) { showMessage(authMessageDiv, getTranslation('error_generic_ar'), false); }
+            } catch (error) { showMessage(authMessageDiv, 'error_generic_ar', false); }
         });
     }
-
-    if (logoutButtonFromDropdown) {
-        logoutButtonFromDropdown.addEventListener('click', async (e) => {
-            e.preventDefault();
-            const confirmed = confirm(getTranslation('logout_confirm_message'));
-            if (confirmed) {
-                try {
-                    const response = await fetch('/api/logout');
-                    const data = await response.json();
-                    showMessage(globalMessageDiv, data.message, data.success);
-                    if (data.success) { updateAuthUI(false); setActiveSection('home-section');}
-                } catch (error) { showMessage(globalMessageDiv, getTranslation('error_logout_ar'), false); }
-            }
-        });
-    }
+    
+    // Account Management
+    if(showUpdateUsernameBtn) showUpdateUsernameBtn.addEventListener('click', () => {
+        if(updateUsernameForm) updateUsernameForm.style.display = updateUsernameForm.style.display === 'none' ? 'block' : 'none';
+    });
+    if(showUpdatePasswordBtn) showUpdatePasswordBtn.addEventListener('click', () => {
+        if(updatePasswordForm) updatePasswordForm.style.display = updatePasswordForm.style.display === 'none' ? 'block' : 'none';
+    });
     if (updateUsernameBtn && newUsernameInput) {
         updateUsernameBtn.addEventListener('click', async () => {
             const newUsername = newUsernameInput.value.trim();
-            if (!newUsername) return;
+            if (!newUsername) return; 
             try {
                 const response = await fetch('/api/account/update-username', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ newUsername }) });
                 const data = await response.json();
-                showMessage(manageAccountMessageDiv, data.message, data.success);
+                showMessage(manageAccountMessageDiv, data.messageKey || 'error_generic_ar', data.success, 5000, data.replacements || {});
                 if (data.success) {
                     newUsernameInput.value = '';
-                    if (currentUsernameDisplay) currentUsernameDisplay.value = data.newUsername;
-                    if (loggedInUsernameDropdownSpan) loggedInUsernameDropdownSpan.textContent = data.newUsername;
-                    if(currentUserData) currentUserData.username = data.newUsername;
+                    await checkAuthState(); // Re-fetch user data to update everywhere
+                    if (updateUsernameForm) updateUsernameForm.style.display = 'none';
                 }
-            } catch (error) { showMessage(manageAccountMessageDiv, getTranslation('error_generic_ar'), false); }
+            } catch (error) { showMessage(manageAccountMessageDiv, 'error_generic_ar', false); }
         });
     }
     if (updatePasswordBtn && currentPasswordInput && newPasswordInput && confirmNewPasswordInput) {
         updatePasswordBtn.addEventListener('click', async () => {
             const currentPassword = currentPasswordInput.value; const newPassword = newPasswordInput.value; const confirmNewPassword = confirmNewPasswordInput.value;
-            if (!currentPassword || !newPassword || !confirmNewPassword) { showMessage(manageAccountMessageDiv, getTranslation('password_fields_required_ar'), false); return; }
-            if (newPassword.length < 6) { showMessage(manageAccountMessageDiv, getTranslation('password_short_ar'), false); return; }
-            if (newPassword !== confirmNewPassword) { showMessage(manageAccountMessageDiv, getTranslation('password_mismatch_ar'), false); return; }
+            if (!currentPassword || !newPassword || !confirmNewPassword) { showMessage(manageAccountMessageDiv, 'password_fields_required_ar', false); return; }
+            if (newPassword.length < 6) { showMessage(manageAccountMessageDiv, 'password_short_ar', false); return; }
+            if (newPassword !== confirmNewPassword) { showMessage(manageAccountMessageDiv, 'password_mismatch_ar', false); return; }
             try {
-                const response = await fetch('/api/account/update-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentPassword, newPassword, confirmNewPassword }) });
+                const response = await fetch('/api/account/update-password', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ currentPassword, newPassword }) });
                 const data = await response.json();
-                showMessage(manageAccountMessageDiv, data.message, data.success);
-                if (data.success) { currentPasswordInput.value = ''; newPasswordInput.value = ''; confirmNewPasswordInput.value = '';}
-            } catch (error) { showMessage(manageAccountMessageDiv, getTranslation('error_generic_ar'), false); }
+                showMessage(manageAccountMessageDiv, data.messageKey || 'error_generic_ar', data.success);
+                if (data.success) { 
+                    currentPasswordInput.value = ''; newPasswordInput.value = ''; confirmNewPasswordInput.value = '';
+                    if (updatePasswordForm) updatePasswordForm.style.display = 'none';
+                }
+            } catch (error) { showMessage(manageAccountMessageDiv, 'error_generic_ar', false); }
         });
     }
-    if (deleteAccountBtn) {
-        deleteAccountBtn.addEventListener('click', async () => {
-            const warningConfirmed = confirm(`${getTranslation('delete_account_confirm_title')}\n\n${getTranslation('delete_account_warning')}`);
-            if (!warningConfirmed) return;
-            const password = prompt(getTranslation('delete_account_prompt_password'));
-            if (password === null) return; 
-            if (!password) { showMessage(globalMessageDiv, getTranslation('password_required_for_delete_ar'), false, 0); return; }
-            try {
-                const response = await fetch('/api/account/delete', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password }) });
-                const data = await response.json();
-                showMessage(globalMessageDiv, data.message, data.success, data.success ? 7000 : 0);
-                if (data.success) { updateAuthUI(false); setActiveSection('home-section'); }
-            } catch (error) { showMessage(globalMessageDiv, getTranslation('error_generic_ar'), false, 0); }
-        });
-    }
+    if(logoutBtn) logoutBtn.addEventListener('click', handleLogout);
+    if(deleteAccountBtn) deleteAccountBtn.addEventListener('click', handleDeleteAccount);
+
+    // Search
     const searchButton = document.getElementById('searchButton');
     const searchInput = document.getElementById('searchInput');
-    let noResultsEl = null;
     if (searchButton && searchInput) {
         const performSearch = () => {
             const query = searchInput.value.trim().toLowerCase();
-            setActiveSection('videos-section');
-            if (noResultsEl && noResultsEl.parentNode) noResultsEl.parentNode.removeChild(noResultsEl); noResultsEl = null;
-            if (videoGridContainer) {
-                if (query) filterVideosBySearch(query);
-                else {
-                    videoGridContainer.querySelectorAll('.video-card').forEach(card => card.style.display = 'flex');
-                    if (allVideosData.length === 0) videoGridContainer.innerHTML = `<p class="no-results-message">${getTranslation('no_videos_ar')}</p>`;
-                }
+            setActiveSection('videos-section', true, true); 
+            const videoGridContainer = document.getElementById('videoGridContainer');
+            if (!videoGridContainer) return;
+            
+            videoGridContainer.innerHTML = '';
+            let found = false;
+            
+            const filteredVideos = allVideosData.filter(videoData => {
+                if (!query) return true; // Show all if query is empty
+                const title = (videoData.title[currentLang] || videoData.title['ar'] || '').toLowerCase();
+                const description = (videoData.description[currentLang] || videoData.description['ar'] || '').toLowerCase();
+                return title.includes(query) || description.includes(query) || videoData.id.toLowerCase().includes(query);
+            });
+
+            if (filteredVideos.length > 0) {
+                filteredVideos.forEach(video => videoGridContainer.appendChild(createVideoCard(video)));
+                found = true;
+            }
+
+            if (!found && query) {
+                const noResultsEl = document.createElement('p');
+                noResultsEl.className = 'no-results-message';
+                noResultsEl.textContent = getTranslation('search_no_results_ar', { query: searchInput.value.trim() });
+                videoGridContainer.appendChild(noResultsEl);
+            } else if (!found && !query && allVideosData.length === 0) {
+                 videoGridContainer.innerHTML = `<p class="no-results-message">${getTranslation('no_videos_ar')}</p>`;
             }
         };
         searchButton.addEventListener('click', performSearch);
         searchInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') { e.preventDefault(); performSearch(); }});
-        searchInput.addEventListener('input', () => { if (searchInput.value.trim() === '') performSearch(); });
+        searchInput.addEventListener('input', () => { if (searchInput.value.trim() === '') performSearch(); }); 
     }
-    function filterVideosBySearch(query) {
-        if (!videoGridContainer) return;
-        const videoCards = videoGridContainer.querySelectorAll('.video-card');
-        let found = false;
-        videoCards.forEach(card => {
-            const videoId = card.dataset.videoId;
-            const videoData = allVideosData.find(v => v.id === videoId);
-            if (videoData) {
-                const title = (videoData.title[currentLang] || videoData.title['ar'] || '').toLowerCase();
-                const description = (videoData.description[currentLang] || videoData.description['ar'] || '').toLowerCase();
-                if (title.includes(query) || description.includes(query) || videoId.toLowerCase().includes(query)) {
-                    card.style.display = 'flex'; found = true;
-                } else { card.style.display = 'none'; }
-            } else { card.style.display = 'none'; }
-        });
-        if (noResultsEl && noResultsEl.parentNode) { noResultsEl.parentNode.removeChild(noResultsEl); noResultsEl = null; }
-        if (!found && query) {
-            noResultsEl = document.createElement('p');
-            noResultsEl.className = 'no-results-message';
-            noResultsEl.textContent = getTranslation('search_no_results_ar', { query: searchInput.value.trim() });
-            videoGridContainer.appendChild(noResultsEl);
-        }
-    }
-    const premiumModal = document.getElementById('premiumContentModal');
+
+    // Modals
     const closeModalBtn = premiumModal?.querySelector('.close-modal-btn');
     const modalSubscribeBtn = document.getElementById('modalSubscribeBtn');
     const modalSeePlansBtn = document.getElementById('modalSeePlansBtn');
-    function openModal() { if (premiumModal) premiumModal.style.display = 'flex'; body.style.overflow = 'hidden';}
-    function closeModal() { if (premiumModal) premiumModal.style.display = 'none'; body.style.overflow = '';}
-    if (closeModalBtn) closeModalBtn.addEventListener('click', closeModal);
-    if (modalSubscribeBtn) modalSubscribeBtn.addEventListener('click', () => { closeModal(); setActiveSection('subscription-section'); });
-    if (modalSeePlansBtn) modalSeePlansBtn.addEventListener('click', (e) => { e.preventDefault(); closeModal(); setActiveSection('subscription-section'); });
-    if (premiumModal) premiumModal.addEventListener('click', (event) => { if (event.target === premiumModal) closeModal(); });
-    document.addEventListener('keydown', function (event) { if (event.key === "Escape" && premiumModal?.style.display === 'flex') closeModal();});
+    function openPremiumModal() { if (premiumModal) premiumModal.style.display = 'flex'; body.style.overflow = 'hidden';}
+    function closePremiumModal() { if (premiumModal) premiumModal.style.display = 'none'; body.style.overflow = '';}
+    if (closeModalBtn) closeModalBtn.addEventListener('click', closePremiumModal);
+    if (modalSubscribeBtn) modalSubscribeBtn.addEventListener('click', () => { closePremiumModal(); setActiveSection('subscription-section', true, true); });
+    if (modalSeePlansBtn) modalSeePlansBtn.addEventListener('click', (e) => { e.preventDefault(); closePremiumModal(); setActiveSection('subscription-section', true, true); });
+    if (premiumModal) premiumModal.addEventListener('click', (event) => { if (event.target === premiumModal) closePremiumModal(); });
+    if (closeVideoPlayerModalBtn) closeVideoPlayerModalBtn.addEventListener('click', closeVideoPlayer);
+    if (videoPlayerModal) videoPlayerModal.addEventListener('click', (event) => { if (event.target === videoPlayerModal) closeVideoPlayer(); });
+    document.addEventListener('keydown', (event) => {
+        if (event.key === "Escape") {
+            if (videoPlayerModal?.style.display === 'flex') closeVideoPlayer();
+            if (premiumModal?.style.display === 'flex') closePremiumModal();
+        }
+    });
     
+    // --- INITIALIZATION ---
     async function initializePage() {
         applyTheme(localStorage.getItem('theme') || 'light'); 
         await checkAuthState(); 
-        setLanguage(currentLang);
+        setLanguage(currentLang); 
+        
         let initialSectionId = 'home-section';
-        const isLoggedIn = navAccountDropdownContainer?.style.display !== 'none' && navAccountDropdownContainer?.style.display !== '';
-        if (window.location.hash?.length > 1) {
-            const hashSectionId = window.location.hash.substring(1).split('?')[0];
-            if (document.getElementById(hashSectionId)) { 
-                if (!(hashSectionId === 'login-section' && isLoggedIn)) initialSectionId = hashSectionId;
+        const hash = window.location.hash.substring(1);
+        const sectionIdFromHash = hash.split('?')[0];
+
+        const isLoggedIn = currentUserData !== null;
+
+        if (sectionIdFromHash && document.getElementById(sectionIdFromHash)) { 
+            // Don't show login page if already logged in
+            if (!(sectionIdFromHash === 'login-section' && isLoggedIn)) {
+                initialSectionId = sectionIdFromHash;
             }
-        } else if (isLoggedIn && document.getElementById('login-section')?.classList.contains('active')) {
-            initialSectionId = 'home-section';
         }
-        setActiveSection(initialSectionId, false);
-        console.log("SofagHub Initialized with session persistence and dropdown fixes attempt.");
+        
+        setActiveSection(initialSectionId, false, true); 
+        if(!window.location.hash || window.location.hash === '#') {
+            window.history.replaceState(null, null, '#home-section');
+        }
+
+        console.log("SofagHub Initialized.");
     }
+
     initializePage();
 });

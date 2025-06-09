@@ -1,0 +1,37 @@
+2025-06-09 15:23:30,495 - __main__ - INFO - Starting bot polling...
+2025-06-09 15:23:31,027 - telegram.ext.Application - INFO - Application started
+2025-06-09 15:23:31,377 - __main__ - INFO - Authorized user 6988696258 started interaction.
+2025-06-09 15:23:31,570 - __main__ - INFO - --> display_folder_content: Target='/home/userland', Requested page=0, Edit=False
+2025-06-09 15:23:31,573 - __main__ - INFO -     Validated path: /home/userland
+2025-06-09 15:23:31,573 - __main__ - INFO - -> generate_file_list_markup: Received path='/home/userland', requested_page=0
+2025-06-09 15:23:31,592 - __main__ - WARNING - Symlink /home/userland/sdcard points outside START_DIRECTORY to /sdcard. Skipping target check.
+2025-06-09 15:23:31,596 - __main__ - INFO -    Calculated: total_items=36, total_pages=2, validated_page=0
+2025-06-09 15:23:31,597 - __main__ - INFO -    Slicing: start_index=0, end_index=24, items_on_this_page=24
+2025-06-09 15:23:31,601 - __main__ - INFO -    Stored: UD_VIEW_ITEMS (count: 24), UD_CURRENT_PAGE=0
+2025-06-09 15:23:31,608 - __main__ - INFO -     Generated markup for displayed_page=0. Attempting update.
+2025-06-09 15:23:40,277 - __main__ - INFO - --> display_folder_content: Target='/home/userland/work', Requested page=0, Edit=True
+2025-06-09 15:23:40,283 - __main__ - INFO -     Validated path: /home/userland/work
+2025-06-09 15:23:40,284 - __main__ - INFO - -> generate_file_list_markup: Received path='/home/userland/work', requested_page=0
+2025-06-09 15:23:40,286 - __main__ - INFO -    Calculated: total_items=2, total_pages=1, validated_page=0
+2025-06-09 15:23:40,287 - __main__ - INFO -    Slicing: start_index=0, end_index=24, items_on_this_page=2
+2025-06-09 15:23:40,287 - __main__ - INFO -    Stored: UD_VIEW_ITEMS (count: 2), UD_CURRENT_PAGE=0
+2025-06-09 15:23:40,289 - __main__ - INFO -     Generated markup for displayed_page=0. Attempting update.
+2025-06-09 15:23:42,504 - __main__ - INFO - --> display_folder_content: Target='/home/userland/work/mena2', Requested page=0, Edit=True
+2025-06-09 15:23:42,508 - __main__ - INFO -     Validated path: /home/userland/work/mena2
+2025-06-09 15:23:42,508 - __main__ - INFO - -> generate_file_list_markup: Received path='/home/userland/work/mena2', requested_page=0
+2025-06-09 15:23:42,511 - __main__ - INFO -    Calculated: total_items=2, total_pages=1, validated_page=0
+2025-06-09 15:23:42,511 - __main__ - INFO -    Slicing: start_index=0, end_index=24, items_on_this_page=2
+2025-06-09 15:23:42,511 - __main__ - INFO -    Stored: UD_VIEW_ITEMS (count: 2), UD_CURRENT_PAGE=0
+2025-06-09 15:23:42,513 - __main__ - INFO -     Generated markup for displayed_page=0. Attempting update.
+2025-06-09 15:23:44,451 - __main__ - INFO - --> display_folder_content: Target='/home/userland/work/mena2/mena2', Requested page=0, Edit=True
+2025-06-09 15:23:44,455 - __main__ - INFO -     Validated path: /home/userland/work/mena2/mena2
+2025-06-09 15:23:44,456 - __main__ - INFO - -> generate_file_list_markup: Received path='/home/userland/work/mena2/mena2', requested_page=0
+2025-06-09 15:23:44,459 - __main__ - INFO -    Calculated: total_items=11, total_pages=1, validated_page=0
+2025-06-09 15:23:44,460 - __main__ - INFO -    Slicing: start_index=0, end_index=24, items_on_this_page=11
+2025-06-09 15:23:44,460 - __main__ - INFO -    Stored: UD_VIEW_ITEMS (count: 11), UD_CURRENT_PAGE=0
+2025-06-09 15:23:44,463 - __main__ - INFO -     Generated markup for displayed_page=0. Attempting update.
+2025-06-09 15:23:49,962 - __main__ - INFO - Sending file /home/userland/work/mena2/mena2/project.txt to chat 6988696258
+2025-06-09 15:23:52,385 - __main__ - INFO - Successfully sent file /home/userland/work/mena2/mena2/project.txt to chat 6988696258
+2025-06-09 15:48:29,941 - telegram.ext.Application - INFO - Application is stopping. This might take a moment.
+2025-06-09 15:48:29,969 - telegram.ext.Application - INFO - Application.stop() complete
+2025-06-09 15:48:30,018 - __main__ - INFO - Bot stopped.
